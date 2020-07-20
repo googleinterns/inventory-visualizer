@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package datapb;
+
+message DataRequest {
+    string filename = 1;
+}
+
+message Segment {
+    string country = 1;
+    string device = 2;
+    repeated string dates = 3;
+    repeated int32 inventories = 4;
+}
+
+message DataResponse {
+    repeated Segment data = 1;
+}
+
+service Data {
+   rpc getData (DataRequest) returns (DataResponse);
+}
