@@ -10,7 +10,7 @@ message Segment {
     string country = 1;
     string device = 2;
     repeated string dates = 3;
-    repeated int32 inventories = 4;
+    repeated int64 inventories = 4;
 }
 
 message DataResponse {
