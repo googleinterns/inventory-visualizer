@@ -2,21 +2,27 @@ syntax = "proto3";
 
 package datapb;
 
-message DataRequest {
+import "google/protobuf/timestamp.proto";
+
+message SegmentedTimelineDataRequest {
     string filename = 1;
 }
 
+/*
+Segment defines a Tukey curve for a particular country and device.
+For every date in the date array, there is a corresponding inventory volume in
+the inventories array. */
 message Segment {
     string country = 1;
     string device = 2;
-    repeated string dates = 3;
-    repeated int64 inventories = 4;
+    repeated google.protobuf.Timestamp dates = 3; // array of dates
+    repeated int32 inventories = 4; // array of inventory volumes
 }
 
-message DataResponse {
+message SegmentedTimelineDataResponse {
     repeated Segment data = 1;
 }
 
 service Data {
-   rpc getData (DataRequest) returns (DataResponse);
+   rpc getSegmentedTimelineData (SegmentedTimelineDataRequest) returns (SegmentedTimelineDataResponse);
 }

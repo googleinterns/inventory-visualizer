@@ -14,17 +14,17 @@ class DataStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.getData = channel.unary_unary(
-                '/datapb.Data/getData',
-                request_serializer=data__pb2.DataRequest.SerializeToString,
-                response_deserializer=data__pb2.DataResponse.FromString,
+        self.getSegmentedTimelineData = channel.unary_unary(
+                '/datapb.Data/getSegmentedTimelineData',
+                request_serializer=data__pb2.SegmentedTimelineDataRequest.SerializeToString,
+                response_deserializer=data__pb2.SegmentedTimelineDataResponse.FromString,
                 )
 
 
 class DataServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def getData(self, request, context):
+    def getSegmentedTimelineData(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -33,10 +33,10 @@ class DataServicer(object):
 
 def add_DataServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'getData': grpc.unary_unary_rpc_method_handler(
-                    servicer.getData,
-                    request_deserializer=data__pb2.DataRequest.FromString,
-                    response_serializer=data__pb2.DataResponse.SerializeToString,
+            'getSegmentedTimelineData': grpc.unary_unary_rpc_method_handler(
+                    servicer.getSegmentedTimelineData,
+                    request_deserializer=data__pb2.SegmentedTimelineDataRequest.FromString,
+                    response_serializer=data__pb2.SegmentedTimelineDataResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -49,7 +49,7 @@ class Data(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def getData(request,
+    def getSegmentedTimelineData(request,
             target,
             options=(),
             channel_credentials=None,
@@ -58,8 +58,8 @@ class Data(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/datapb.Data/getData',
-            data__pb2.DataRequest.SerializeToString,
-            data__pb2.DataResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/datapb.Data/getSegmentedTimelineData',
+            data__pb2.SegmentedTimelineDataRequest.SerializeToString,
+            data__pb2.SegmentedTimelineDataResponse.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)
