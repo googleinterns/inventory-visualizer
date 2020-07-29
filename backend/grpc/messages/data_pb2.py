@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\ndata.proto\x12\x06\x64\x61tapb\x1a\x1fgoogle/protobuf/timestamp.proto\"0\n\x1cSegmentedTimelineDataRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"j\n\x07Segment\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x13\n\x0binventories\x18\x04 \x03(\x05\">\n\x1dSegmentedTimelineDataResponse\x12\x1d\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x0f.datapb.Segment2o\n\x04\x44\x61ta\x12g\n\x18getSegmentedTimelineData\x12$.datapb.SegmentedTimelineDataRequest\x1a%.datapb.SegmentedTimelineDataResponseb\x06proto3'
+  serialized_pb=b'\n\ndata.proto\x12\x06\x64\x61tapb\x1a\x1fgoogle/protobuf/timestamp.proto\"0\n\x1cSegmentedTimelineDataRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"t\n\x0bSegmentData\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x19\n\x11inventory_volumes\x18\x04 \x03(\x05\"B\n\x1dSegmentedTimelineDataResponse\x12!\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x13.datapb.SegmentData2o\n\x04\x44\x61ta\x12g\n\x18getSegmentedTimelineData\x12$.datapb.SegmentedTimelineDataRequest\x1a%.datapb.SegmentedTimelineDataResponseb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
 
@@ -59,37 +59,37 @@ _SEGMENTEDTIMELINEDATAREQUEST = _descriptor.Descriptor(
 )
 
 
-_SEGMENT = _descriptor.Descriptor(
-  name='Segment',
-  full_name='datapb.Segment',
+_SEGMENTDATA = _descriptor.Descriptor(
+  name='SegmentData',
+  full_name='datapb.SegmentData',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='country', full_name='datapb.Segment.country', index=0,
+      name='country', full_name='datapb.SegmentData.country', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='device', full_name='datapb.Segment.device', index=1,
+      name='device', full_name='datapb.SegmentData.device', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='dates', full_name='datapb.Segment.dates', index=2,
+      name='dates', full_name='datapb.SegmentData.dates', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='inventories', full_name='datapb.Segment.inventories', index=3,
+      name='inventory_volumes', full_name='datapb.SegmentData.inventory_volumes', index=3,
       number=4, type=5, cpp_type=1, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -108,7 +108,7 @@ _SEGMENT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=105,
-  serialized_end=211,
+  serialized_end=221,
 )
 
 
@@ -139,14 +139,14 @@ _SEGMENTEDTIMELINEDATARESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=213,
-  serialized_end=275,
+  serialized_start=223,
+  serialized_end=289,
 )
 
-_SEGMENT.fields_by_name['dates'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
-_SEGMENTEDTIMELINEDATARESPONSE.fields_by_name['data'].message_type = _SEGMENT
+_SEGMENTDATA.fields_by_name['dates'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_SEGMENTEDTIMELINEDATARESPONSE.fields_by_name['data'].message_type = _SEGMENTDATA
 DESCRIPTOR.message_types_by_name['SegmentedTimelineDataRequest'] = _SEGMENTEDTIMELINEDATAREQUEST
-DESCRIPTOR.message_types_by_name['Segment'] = _SEGMENT
+DESCRIPTOR.message_types_by_name['SegmentData'] = _SEGMENTDATA
 DESCRIPTOR.message_types_by_name['SegmentedTimelineDataResponse'] = _SEGMENTEDTIMELINEDATARESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -157,12 +157,12 @@ SegmentedTimelineDataRequest = _reflection.GeneratedProtocolMessageType('Segment
   })
 _sym_db.RegisterMessage(SegmentedTimelineDataRequest)
 
-Segment = _reflection.GeneratedProtocolMessageType('Segment', (_message.Message,), {
-  'DESCRIPTOR' : _SEGMENT,
+SegmentData = _reflection.GeneratedProtocolMessageType('SegmentData', (_message.Message,), {
+  'DESCRIPTOR' : _SEGMENTDATA,
   '__module__' : 'data_pb2'
-  # @@protoc_insertion_point(class_scope:datapb.Segment)
+  # @@protoc_insertion_point(class_scope:datapb.SegmentData)
   })
-_sym_db.RegisterMessage(Segment)
+_sym_db.RegisterMessage(SegmentData)
 
 SegmentedTimelineDataResponse = _reflection.GeneratedProtocolMessageType('SegmentedTimelineDataResponse', (_message.Message,), {
   'DESCRIPTOR' : _SEGMENTEDTIMELINEDATARESPONSE,
@@ -180,8 +180,8 @@ _DATA = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=277,
-  serialized_end=388,
+  serialized_start=291,
+  serialized_end=402,
   methods=[
   _descriptor.MethodDescriptor(
     name='getSegmentedTimelineData',
