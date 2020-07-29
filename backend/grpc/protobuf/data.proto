@@ -9,14 +9,12 @@ message SegmentedTimelineDataRequest {
 }
 
 // Segment defines a Tukey curve for a particular country and device.
-// For every date in the date array, there is a corresponding inventory
-// volume in the inventory_volumes array.
 message SegmentData {
     string country = 1;
     string device = 2;
-    // array of dates
+    // For every date in the date array there is a corresponding inventory
+    // volume in the inventory_volumes array
     repeated google.protobuf.Timestamp dates = 3;
-    //array of inventory volumes
     repeated int32 inventory_volumes = 4;
 }
 
