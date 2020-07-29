@@ -14,6 +14,14 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
+## Install additional tools for generating proto stubs
+
+Run `npm install @improbable-eng/grpc-web google-protobuf grpc protoc ts-protoc-gen`
+
+## Generate ts and js files from protos
+
+Run `nmp run compile`
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
