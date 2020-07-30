@@ -10,11 +10,11 @@ def allowed_file(filename):
 
 def post(request):
     if 'file' not in request.files:
-        return "no file in request", 500
+        return 'no file in request', 500, ''
     file = request.files['file']
     if file.filename == '':
-        return "no selected file", 500
+        return 'no selected file', 500, ''
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(config.UPLOAD_FOLDER, filename))
-        return "File uploaded successfully", 200
+        return 'File uploaded successfully', 200, filename
