@@ -2,7 +2,7 @@ import os
 from werkzeug.utils import secure_filename
 import config
 from flask_restful import Resource
-from flask import request, abort, jsonify
+from flask import request, abort
 
 
 def allowed_file(filename):
@@ -20,4 +20,4 @@ class File(Resource):
         if allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(config.UPLOAD_FOLDER, filename))
-            return jsonify('File uploaded successfully')
+            return {'response': 'File uploaded successfully'}
