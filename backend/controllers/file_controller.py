@@ -1,20 +1,23 @@
 import os
 from werkzeug.utils import secure_filename
 import config
+from flask_restful import Resource
+from flask import request, abort, jsonify
 
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS
+    return ('.' in filename and
+            filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS)
 
 
-def post(request):
-    if 'file' not in request.files:
-        return 'no file in request', 500, ''
-    file = request.files['file']
-    if file.filename == '':
-        return 'no selected file', 500, ''
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(config.UPLOAD_FOLDER, filename))
-        return 'File uploaded successfully', 200, filename
+class File(Resource):
+    def post(self):
+        if 'file' not in request.files:
+            abort(500)
+        file = request.files['file']
+        if file.filename == '':
+            abort(500)
+        if allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(config.UPLOAD_FOLDER, filename))
+            return jsonify('File uploaded successfully')
