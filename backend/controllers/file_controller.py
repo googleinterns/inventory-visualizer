@@ -12,9 +12,9 @@ def allowed_file(filename):
 
 class File(Resource):
     def post(self):
-        if 'file' not in request.files:
+        if 'uploaded_data' not in request.files:
             abort(500)
-        file = request.files['file']
+        file = request.files['uploaded_data']
         if file.filename == '':
             abort(500)
         if allowed_file(file.filename):
