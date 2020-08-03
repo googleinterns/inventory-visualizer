@@ -21,3 +21,8 @@ class File(Resource):
             filename = secure_filename(file.filename)
             file.save(os.path.join(config.UPLOAD_FOLDER, filename))
             return {'response': 'File uploaded successfully'}
+
+    def delete(self):
+        filename = request.args.get('filename')
+        os.remove(os.path.join(config.UPLOAD_FOLDER, filename))
+        return {'response': 'File deleted successfully'}

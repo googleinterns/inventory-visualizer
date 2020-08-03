@@ -9,6 +9,6 @@ api = Api(app)
 CORS(app)
 
 api.add_resource(data_controller.Data, '/data/<filename>')
-api.add_resource(file_controller.File, '/upload_file', )
+api.add_resource(file_controller.File, '/file', )
 if __name__ == '__main__':
     app.run(port=config.port)
