@@ -9,8 +9,6 @@ from werkzeug.utils import secure_filename
 from google.protobuf.timestamp_pb2 import Timestamp
 from datetime import datetime
 
-saved_data = {}
-
 
 class Data(Resource):
     def get(self, filename):
@@ -20,11 +18,7 @@ class Data(Resource):
         except ValueError:
             abort(400, 'page and per_page values should be a numbers')
         filename = secure_filename(filename)
-        if filename in saved_data:
-            data = saved_data[filename]
-        else:
-            data = get_data(os.path.join(config.UPLOAD_FOLDER, filename))
-            saved_data[filename] = data
+        data = get_data(os.path.join(config.UPLOAD_FOLDER, filename))
         response = data_pb2.SegmentedTimelineDataResponse()
         response.data.extend(list(data.values())[(page * per_page):(page * per_page + per_page)])
         return MessageToDict(response)
