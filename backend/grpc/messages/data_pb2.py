@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\ndata.proto\x12\x06\x64\x61tapb\x1a\x1fgoogle/protobuf/timestamp.proto\"0\n\x1cSegmentedTimelineDataRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"t\n\x0bSegmentData\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x19\n\x11inventory_volumes\x18\x04 \x03(\x05\"B\n\x1dSegmentedTimelineDataResponse\x12!\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x13.datapb.SegmentData2o\n\x04\x44\x61ta\x12g\n\x18getSegmentedTimelineData\x12$.datapb.SegmentedTimelineDataRequest\x1a%.datapb.SegmentedTimelineDataResponseb\x06proto3'
+  serialized_pb=b'\n\ndata.proto\x12\x06\x64\x61tapb\x1a\x1fgoogle/protobuf/timestamp.proto\"0\n\x1cSegmentedTimelineDataRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"t\n\x0bSegmentData\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x19\n\x11inventory_volumes\x18\x04 \x03(\x05\"U\n\x1dSegmentedTimelineDataResponse\x12!\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x13.datapb.SegmentData\x12\x11\n\tcountries\x18\x02 \x03(\t2o\n\x04\x44\x61ta\x12g\n\x18getSegmentedTimelineData\x12$.datapb.SegmentedTimelineDataRequest\x1a%.datapb.SegmentedTimelineDataResponseb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
 
@@ -127,6 +127,13 @@ _SEGMENTEDTIMELINEDATARESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='countries', full_name='datapb.SegmentedTimelineDataResponse.countries', index=1,
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -140,7 +147,7 @@ _SEGMENTEDTIMELINEDATARESPONSE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=223,
-  serialized_end=289,
+  serialized_end=308,
 )
 
 _SEGMENTDATA.fields_by_name['dates'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
@@ -180,8 +187,8 @@ _DATA = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=291,
-  serialized_end=402,
+  serialized_start=310,
+  serialized_end=421,
   methods=[
   _descriptor.MethodDescriptor(
     name='getSegmentedTimelineData',
