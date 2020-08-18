@@ -1,6 +1,11 @@
-<div class="wrapper">
+<div class="wrapper" *ngIf="!hasDisplayedData">
   <div class="file-upload">
-    <input type="file" accept=".csv"  (change)="handleFileInput($event.target.files)"/>
-    <i class="fa fa-arrow-up"></i>
+    <input type="file" accept=".csv" (change)="handleFileInput($event.target.files)"/>
+    <i class="fa fa-line-chart"></i>
   </div>
 </div>
+
+<app-google-charts (scrolled)="scrollHandler()"
+  [changing]="updateCharts">
+</app-google-charts>
+

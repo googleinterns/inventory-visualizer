@@ -1,0 +1,28 @@
+<div
+  class="data-results"
+  infiniteScroll
+  [infiniteScrollDistance]="0"
+  [infiniteScrollThrottle]="50"
+  (scrolled)="onScroll()"
+>
+
+  <div *ngFor="let i of charts">
+    <div>
+      <google-chart #chart
+                    [title]="i.title"
+                    [type]="i.type"
+                    [data]="i.data"
+                    [columns]="i.columns"
+                    [options]="i.options">
+      </google-chart>
+    </div>
+  </div>
+  <ngx-spinner
+    bdOpacity = 0.5
+    bdColor = ""
+    size = "large"
+    color = "#2590EB"
+  >
+  </ngx-spinner>
+</div>
+
