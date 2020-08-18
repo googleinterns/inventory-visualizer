@@ -20,6 +20,7 @@ message SegmentData {
 
 message SegmentedTimelineDataResponse {
     repeated SegmentData data = 1;
+    repeated string countries = 2;
 }
 
 service Data {
