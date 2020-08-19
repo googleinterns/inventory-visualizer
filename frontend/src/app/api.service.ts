@@ -11,9 +11,17 @@ export class ApiService {
 
   constructor(private http: HttpClient) {
   }
-
+  
+  /**
+  * @description This method makes an http call and fetches the data from the specified file and a specific page.
+  * The data can be filtered by country, device and time range.
+  *  
+  * @param {string=} filename The name of the file to take the data from
+  * @param {number=} page The page to take the data from from the paginated response
+  * @param {number=} perPage The amount of segments to fetch
+  * @param {object=} filters Filters for the data. This is an object with fields: countries, device, fromDate, toDate
+  */
   getSegmentedData(filename, page = 0, perPage = 8, filters = null): Observable<object> {
-
     let params = new HttpParams()
       .set('page', page.toString())
       .set('per_page', perPage.toString());
@@ -21,25 +29,22 @@ export class ApiService {
     return this.http.get(environment.apiRest + 'data/' + filename, {params});
   }
 
-  getComparisonData(filename, filename2, page = 0, perPage = 8, filters = null): Observable<object> {
-
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('per_page', perPage.toString());
-    params = this.buildFilter(filters, params);
-    return this.http.get(environment.apiRest + 'compare/' + filename + '/' + filename2, {params});
-  }
-
-  getErrorData(filename, filename2): Observable<object> {
-    return this.http.get(environment.apiRest + 'error/' + filename + '/' + filename2);
-  }
-
+  /**
+  * @description This method makes an http post call to upload a file
+  *  
+  * @param {FileList=} files a list of files
+  */
   uploadFile(files): Observable<object> {
     const formData: FormData = new FormData();
     formData.append('uploaded_data', files[0], files[0].name);
     return this.http.post(environment.apiRest + 'file', formData);
   }
 
+  /**
+  * @description This method makes an http delete call to delete a file
+  *  
+  * @param {FileList=} files a list of files
+  */
   deleteFile(files): void {
     const params = new HttpParams()
       .set('filename', files[0].name);

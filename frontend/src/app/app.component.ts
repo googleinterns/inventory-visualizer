@@ -44,7 +44,7 @@ export class AppComponent {
     });
   }
 
-  signalChildFOrChartUpdates(changes): void {
+  signalChildForChartUpdates(changes): void {
     this.updateCharts.next(changes);
   }
 
@@ -53,7 +53,7 @@ export class AppComponent {
       this.dataResponse = SegmentedTimelineDataResponse.fromJSON(res);
       this.segments = [];
       this.dataResponse.data.forEach(item => this.segments.push(item));
-      this.signalChildFOrChartUpdates(this.segments);
+      this.signalChildForChartUpdates(this.segments);
       this.hasDisplayedData = true;
     });
   }
