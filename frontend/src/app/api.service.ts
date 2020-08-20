@@ -56,10 +56,10 @@ export class ApiService {
       return params;
     }
     if (filters.device != null) {
-      params = params.set('device', filters.device);
+      params = params.set('devices', filters.device);
     }
     if (filters.countries && filters.countries !== [] && filters.countries.length !== 0) {
-      params = params.set('country', filters.countries.join([',']));
+      params = params.set('countries', filters.countries.join([',']));
     }
     if (filters.fromDate != null) {
       const date = new Date(filters.fromDate);
