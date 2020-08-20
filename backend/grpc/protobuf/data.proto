@@ -23,6 +23,27 @@ message SegmentedTimelineDataResponse {
     repeated string countries = 2;
 }
 
+message SegmentedTimelineCompareResponse {
+    SegmentedTimelineDataResponse original_data = 1;
+    SegmentedTimelineDataResponse comparison_data = 2; 
+}
+
+message SegmentedDataError {
+    string country = 1;
+    string device = 2;
+    repeated google.protobuf.Timestamp dates = 3;
+    repeated float error = 4;
+    float min = 5;
+    float max = 6;
+    float median = 7;
+    float first_quartile = 8;
+    float third_quartile = 9;
+}
+
+message SegmentedDataErrorResponse {
+    repeated SegmentedDataError errors = 1;
+}
+
 service Data {
    rpc getSegmentedTimelineData (SegmentedTimelineDataRequest) returns (SegmentedTimelineDataResponse);
 }
