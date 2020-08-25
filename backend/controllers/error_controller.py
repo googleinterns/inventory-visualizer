@@ -13,6 +13,19 @@ error_importance_by_files = {}
 
 
 def get_error(segment1, segment2):
+    """
+
+    This function takes two segments as parameters, and starts iterating over their dates and
+    inventory_volumes arrays in order to calculate the error. Since the segments can have information
+    for different dates, the iteration is done by constantly aligning the next date for which the error
+    is going to be calculated. The starting position of the error calculation is the first date
+    that has produced a difference inn inventory_volumes as it is considered the first prediction.
+    The error is calculated as (value2 - value1)/value2.
+
+    :param segment1: data_pb2.SegmentedData This is the first segment
+    :param segment2: data_pb2.SegmentedData This is the second segment
+    :return: data_pb2.SegmentedDataError This is the object containing all error information
+    """
     error = data_pb2.SegmentedDataError(country=segment1.country, device=segment1.device)
     index1, index2 = get_index_with_first_difference(segment1, segment2)
     while index1 != -1:
@@ -35,6 +48,16 @@ def get_error(segment1, segment2):
 
 
 def get_index_with_first_difference(segment1, segment2):
+    """
+
+    This method gets two segments as parameters and starts iterating over their inventory_volumes
+    in order to find the indices of the first date for which the volumes are different.
+    Note that this method returns two indices as the same date may not correspond to the same index in the two arrays
+
+    :param segment1: data_pb2.SegmentedData This is the first segment
+    :param segment2: data_pb2.SegmentedData This is the second segment
+    :return: int, int Two indices that mark the position of the first difference between the two arrays
+    """
     index1, index2 = get_next_same_date_indexes(segment1.dates, segment2.dates, 0, 0)
     if index1 == -1:
         return -1, -1
@@ -46,6 +69,19 @@ def get_index_with_first_difference(segment1, segment2):
 
 
 def get_next_same_date_indexes(dates1, dates2, index1, index2):
+    """
+
+    This method get two lists of dates and two starting positions from respectively
+    the first and the second dates lists. It then finds the closest date in time that
+    is contained in both of the data lists from those two positions on and returns
+    the indices of the found date for both of the arrays.
+
+    :param dates1: list This is the first list with dates
+    :param dates2: list This is the second list with dates
+    :param index1: int This is the starting position for the first list
+    :param index2: int This is the starting position for the second list
+    :return: int, int Two indices representing the position of the first encountered matching date
+    """
     if index1 >= len(dates1) or index2 >= len(dates2):
         return -1, -1
     if dates1[index1].seconds == dates2[index2].seconds:
@@ -86,22 +122,21 @@ class Comparator(Resource):
         original_segmented_timeline_data = data_pb2.SegmentedTimelineDataResponse()
         comparison_segmented_timeline_data = data_pb2.SegmentedTimelineDataResponse()
 
-        if (filename1, filename2) in error_importance_by_files:
-            error_importance = error_importance_by_files[(filename1, filename2)]
-            sorted_segment_keys_by_importance = [segment_key for segment_key in error_importance if
-                                                 segment_key in filtered_original_data.keys()]
-            sorted_segment_keys_by_importance_for_page = sorted_segment_keys_by_importance[
-                                                         (page * per_page):(page * per_page + per_page)]
-            original_segmented_timeline_data.data.extend(
-                [filtered_original_data[key] for key in sorted_segment_keys_by_importance_for_page])
-            comparison_segmented_timeline_data.data.extend(
-                [filtered_comparison_data[key] for key in sorted_segment_keys_by_importance_for_page])
-        else:
-            original_segmented_timeline_data.data.extend(
-                list(filtered_original_data.values())[(page * per_page):(page * per_page + per_page)])
-            comparison_segmented_timeline_data.data.extend(
-                list(filtered_comparison_data.values())[(page * per_page):(page * per_page + per_page)])
+        if (filename1, filename2) not in error_importance_by_files:
+            errors = sorted([get_error(original_data[tuple], comparison_data[tuple]) for tuple in original_data.keys()],
+                            key=lambda x: x.median,
+                            reverse=True)
+            error_importance_by_files[(filename1, filename2)] = [(error.country, error.device) for error in errors]
 
+        error_importance = error_importance_by_files[(filename1, filename2)]
+        sorted_segment_keys_by_importance = [segment_key for segment_key in error_importance if
+                                             segment_key in filtered_original_data.keys()]
+        sorted_segment_keys_by_importance_for_page = sorted_segment_keys_by_importance[
+                                                     (page * per_page):(page * per_page + per_page)]
+        original_segmented_timeline_data.data.extend(
+            [filtered_original_data[key] for key in sorted_segment_keys_by_importance_for_page])
+        comparison_segmented_timeline_data.data.extend(
+            [filtered_comparison_data[key] for key in sorted_segment_keys_by_importance_for_page])
         response = data_pb2.SegmentedTimelineCompareResponse(original_data=original_segmented_timeline_data,
                                                              comparison_data=comparison_segmented_timeline_data)
         return MessageToDict(response)
