@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from filters.data_filter import DataFilter
 from data_reader import get_data
 from numpy import percentile, asarray
+from filters.time_period_grouper import group_segment_data_by_time_period
 
 error_importance_by_files = {}
 
@@ -28,6 +29,7 @@ def get_error(segment1, segment2):
     """
     error = data_pb2.SegmentedDataError(country=segment1.country, device=segment1.device)
     index1, index2 = get_index_with_first_difference(segment1, segment2)
+    weighted_errors = []
     while index1 != -1:
         value1 = segment1.inventory_volumes[index1]
         value2 = segment2.inventory_volumes[index2]
@@ -35,6 +37,9 @@ def get_error(segment1, segment2):
             current_error = (value2 - value1) / value1
             error.error.append(current_error)
             error.dates.append(segment1.dates[index1])
+            weight = 30 / len(error.error) if len(error.error) >= 30 else 1
+            weighted_error = weight * abs(value2 - value1) / value1
+            weighted_errors.append(weighted_error)
         index1 = index1 + 1
         index2 = index2 + 1
         index1, index2 = get_first_same_date_indexes_in_sublists(segment1.dates, segment2.dates, index1, index2)
@@ -44,6 +49,7 @@ def get_error(segment1, segment2):
     error.first_quartile = quartiles[0]
     error.median = quartiles[1]
     error.third_quartile = quartiles[2]
+    error.weighted_error_average = percentile(weighted_errors, [50])[0]
     return error
 
 
@@ -95,7 +101,10 @@ class Error(Resource):
     def get(self, filename1, filename2):
         data1, _, _ = get_data(os.path.join(config.UPLOAD_FOLDER, secure_filename(filename1)))
         data2, _, _ = get_data(os.path.join(config.UPLOAD_FOLDER, secure_filename(filename2)))
-        errors = sorted([get_error(data1[tuple], data2[tuple]) for tuple in data1.keys()], key=lambda x: x.median,
+        time_period = request.args.get('time_period') if request.args.get('time_period') else config.time_period
+        data1 = group_segment_data_by_time_period(data1, time_period)
+        data2 = group_segment_data_by_time_period(data2, time_period)
+        errors = sorted([get_error(data1[tuple], data2[tuple]) for tuple in data1.keys()], key=lambda x: x.weighted_error_average,
                         reverse=True)
         error_importance_by_files[(filename1, filename2)] = [(error.country, error.device) for error in errors]
         response = data_pb2.SegmentedDataErrorResponse(errors=errors)
@@ -115,9 +124,12 @@ class Comparator(Resource):
             os.path.join(config.UPLOAD_FOLDER, filename1))
         comparison_data, _, _ = get_data(
             os.path.join(config.UPLOAD_FOLDER, filename2))
+        time_period = request.args.get('time_period') if request.args.get('time_period') else config.time_period
+        grouped_original_data = group_segment_data_by_time_period(original_data, time_period)
+        grouped_comparison_data = group_segment_data_by_time_period(comparison_data, time_period)
         data_filter = DataFilter(request.args)
-        filtered_original_data = data_filter.filter(original_data)
-        filtered_comparison_data = data_filter.filter(comparison_data)
+        filtered_original_data = data_filter.filter(grouped_original_data)
+        filtered_comparison_data = data_filter.filter(grouped_comparison_data)
 
         original_segmented_timeline_data = data_pb2.SegmentedTimelineDataResponse()
         comparison_segmented_timeline_data = data_pb2.SegmentedTimelineDataResponse()

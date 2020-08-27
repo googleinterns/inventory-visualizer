@@ -7,7 +7,7 @@ import os
 from werkzeug.utils import secure_filename
 from filters.data_filter import DataFilter
 from data_reader import get_data
-
+from filters.time_period_grouper import  group_segment_data_by_time_period
 
 class Data(Resource):
     def get(self, filename):
@@ -19,9 +19,10 @@ class Data(Resource):
         data_filter = DataFilter(request.args)
         filename = secure_filename(filename)
         data, countries, devices = get_data(os.path.join(config.UPLOAD_FOLDER, filename))
-        filtered_data = data_filter.filter(data)
+        time_period = request.args.get('time_period') if request.args.get('time_period') else config.time_period
+        grouped_data = group_segment_data_by_time_period(data, time_period)
+        filtered_data = data_filter.filter(grouped_data)
         response = data_pb2.SegmentedTimelineDataResponse()
         response.data.extend(list(filtered_data.values())[(page * per_page):(page * per_page + per_page)])
         response.countries.extend(countries)
-        response.devices.extend(devices)
         return MessageToDict(response)
