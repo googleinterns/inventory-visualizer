@@ -67,10 +67,7 @@ export class AppComponent {
   fromDate: string;
   toDate: string;
   countries = [];
-  devices = [
-    { id: 'MT', name: 'Mobile' },
-    { id: 'DO', name: 'Desktop' },
-  ];
+  devices = [];
   selectedDeviceId: string;
   selectedCountryIds: string[];
 
@@ -136,6 +133,7 @@ export class AppComponent {
       .subscribe((res) => {
         this.dataResponse = SegmentedTimelineDataResponse.fromJSON(res);
         this.countries = this.dataResponse.countries;
+        this.devices = this.dataResponse.devices;
         this.segments = [];
         this.dataResponse.data.forEach((item) => this.segments.push(item));
         this.signalChildForChartUpdates(this.segments);

@@ -551,7 +551,7 @@ proto.datapb.SegmentData.prototype.clearInventoryVolumesList = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.datapb.SegmentedTimelineDataResponse.repeatedFields_ = [1,2];
+proto.datapb.SegmentedTimelineDataResponse.repeatedFields_ = [1,2,3];
 
 
 
@@ -586,7 +586,8 @@ proto.datapb.SegmentedTimelineDataResponse.toObject = function(includeInstance, 
   var f, obj = {
     dataList: jspb.Message.toObjectList(msg.getDataList(),
     proto.datapb.SegmentData.toObject, includeInstance),
-    countriesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f
+    countriesList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f,
+    devicesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -632,6 +633,10 @@ proto.datapb.SegmentedTimelineDataResponse.deserializeBinaryFromReader = functio
       var value = /** @type {string} */ (reader.readString());
       msg.addCountries(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addDevices(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -673,6 +678,13 @@ proto.datapb.SegmentedTimelineDataResponse.serializeBinaryToWriter = function(me
   if (f.length > 0) {
     writer.writeRepeatedString(
       2,
+      f
+    );
+  }
+  f = message.getDevicesList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      3,
       f
     );
   }
@@ -751,6 +763,43 @@ proto.datapb.SegmentedTimelineDataResponse.prototype.addCountries = function(val
  */
 proto.datapb.SegmentedTimelineDataResponse.prototype.clearCountriesList = function() {
   return this.setCountriesList([]);
+};
+
+
+/**
+ * repeated string devices = 3;
+ * @return {!Array<string>}
+ */
+proto.datapb.SegmentedTimelineDataResponse.prototype.getDevicesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 3));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.datapb.SegmentedTimelineDataResponse} returns this
+ */
+proto.datapb.SegmentedTimelineDataResponse.prototype.setDevicesList = function(value) {
+  return jspb.Message.setField(this, 3, value || []);
+};
+
+
+/**
+ * @param {string} value
+ * @param {number=} opt_index
+ * @return {!proto.datapb.SegmentedTimelineDataResponse} returns this
+ */
+proto.datapb.SegmentedTimelineDataResponse.prototype.addDevices = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 3, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.datapb.SegmentedTimelineDataResponse} returns this
+ */
+proto.datapb.SegmentedTimelineDataResponse.prototype.clearDevicesList = function() {
+  return this.setDevicesList([]);
 };
 
 

@@ -24,6 +24,7 @@ export interface SegmentData {
 export interface SegmentedTimelineDataResponse {
   data: SegmentData[];
   countries: string[];
+  devices: string[];
 }
 
 export interface SegmentedTimelineCompareResponse {
@@ -59,6 +60,7 @@ const baseSegmentData: object = {
 
 const baseSegmentedTimelineDataResponse: object = {
   countries: "",
+  devices: "",
 };
 
 const baseSegmentedTimelineCompareResponse: object = {
@@ -302,6 +304,9 @@ export const SegmentedTimelineDataResponse = {
     for (const v of message.countries) {
       writer.uint32(18).string(v!);
     }
+    for (const v of message.devices) {
+      writer.uint32(26).string(v!);
+    }
     return writer;
   },
   decode(input: Uint8Array | Reader, length?: number): SegmentedTimelineDataResponse {
@@ -310,6 +315,7 @@ export const SegmentedTimelineDataResponse = {
     const message = { ...baseSegmentedTimelineDataResponse } as SegmentedTimelineDataResponse;
     message.data = [];
     message.countries = [];
+    message.devices = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -318,6 +324,9 @@ export const SegmentedTimelineDataResponse = {
           break;
         case 2:
           message.countries.push(reader.string());
+          break;
+        case 3:
+          message.devices.push(reader.string());
           break;
         default:
           reader.skipType(tag & 7);
@@ -330,6 +339,7 @@ export const SegmentedTimelineDataResponse = {
     const message = { ...baseSegmentedTimelineDataResponse } as SegmentedTimelineDataResponse;
     message.data = [];
     message.countries = [];
+    message.devices = [];
     if (object.data !== undefined && object.data !== null) {
       for (const e of object.data) {
         message.data.push(SegmentData.fromJSON(e));
@@ -340,12 +350,18 @@ export const SegmentedTimelineDataResponse = {
         message.countries.push(String(e));
       }
     }
+    if (object.devices !== undefined && object.devices !== null) {
+      for (const e of object.devices) {
+        message.devices.push(String(e));
+      }
+    }
     return message;
   },
   fromPartial(object: DeepPartial<SegmentedTimelineDataResponse>): SegmentedTimelineDataResponse {
     const message = { ...baseSegmentedTimelineDataResponse } as SegmentedTimelineDataResponse;
     message.data = [];
     message.countries = [];
+    message.devices = [];
     if (object.data !== undefined && object.data !== null) {
       for (const e of object.data) {
         message.data.push(SegmentData.fromPartial(e));
@@ -354,6 +370,11 @@ export const SegmentedTimelineDataResponse = {
     if (object.countries !== undefined && object.countries !== null) {
       for (const e of object.countries) {
         message.countries.push(e);
+      }
+    }
+    if (object.devices !== undefined && object.devices !== null) {
+      for (const e of object.devices) {
+        message.devices.push(e);
       }
     }
     return message;
@@ -369,6 +390,11 @@ export const SegmentedTimelineDataResponse = {
       obj.countries = message.countries.map(e => e || "");
     } else {
       obj.countries = [];
+    }
+    if (message.devices) {
+      obj.devices = message.devices.map(e => e || "");
+    } else {
+      obj.devices = [];
     }
     return obj;
   },
