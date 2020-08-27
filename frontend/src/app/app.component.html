@@ -1,11 +1,78 @@
 <div class="wrapper" *ngIf="!hasDisplayedData">
   <div class="file-upload">
-    <input type="file" accept=".csv" (change)="handleFileInput($event.target.files)"/>
+    <input type="file" accept=".csv" (change)="handleFileInput($event.target.files)" />
     <i class="fa fa-line-chart"></i>
   </div>
 </div>
 
-<app-google-charts (scrolled)="scrollHandler()"
-  [changing]="updateCharts">
+<app-google-charts (scrolled)="scrollHandler()" [changing]="updateCharts" [clear]="clearCharts"
+  [filters]="updateFilters">
 </app-google-charts>
 
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="filter-modal">Filter options</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div>
+    <ng-select [items]="devices" bindLabel="code" bindValue="code" [multiple]="false" placeholder="Select a device"
+      [(ngModel)]="selectedDeviceId">
+    </ng-select>
+  </div>
+
+  <br>
+
+  <div>
+    <ng-select [items]="countries" bindLabel="code" bindValue="code" [multiple]="true" [closeOnSelect]="false"
+      placeholder="Select countries" [(ngModel)]="selectedCountryIds">
+    </ng-select>
+  </div>
+
+  <div class="modal-body">
+    <form>
+      <div class="form-group">
+
+        <label for="from_timestamp">From</label>
+        <div class="input-group">
+          <input id="from_timestamp" class="form-control" [(ngModel)]="fromDate" placeholder="yyyy-mm-dd" name="dp"
+            ngbDatepicker #dp="ngbDatepicker">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+          </div>
+
+        </div>
+
+
+        <label for="to_timestamp">To</label>
+        <div class="input-group">
+          <input id="to_timestamp" class="form-control" [(ngModel)]="toDate" placeholder="yyyy-mm-dd" name="dpTo"
+            ngbDatepicker #dpTo="ngbDatepicker">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calendar" (click)="dpTo.toggle()" type="button"></button>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close('filter')">Filter</button>
+  </div>
+</ng-template>
+
+
+
+<div class="actions" *ngIf="hasDisplayedData">
+  <div class="file-upload">
+    <input type="file" accept=".csv" (change)="handleFileInput($event.target.files)" />
+    <i class="fa fa-line-chart"></i>
+  </div>
+
+  <div class="filter">
+    <button class="button" (click)="openFilterModal(content)"></button>
+    <i class="fa fa-filter"></i>
+  </div>
+</div>

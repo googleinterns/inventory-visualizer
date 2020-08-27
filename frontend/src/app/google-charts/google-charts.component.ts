@@ -10,6 +10,9 @@ import {NgxSpinnerService} from 'ngx-spinner';
 export class GoogleChartsComponent implements AfterViewInit {
 
   @Input() changing: Subject<any> = new Subject();
+  @Input() clear: Subject<any> = new Subject();
+  @Input() filters: Subject<any> = new Subject();
+
   @Output() scrolled = new EventEmitter<number>();
   charts : any[];
   constructor(private spinner: NgxSpinnerService) {
@@ -23,6 +26,9 @@ export class GoogleChartsComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.addChartVisualizations();
+    this.clear.subscribe(v => {
+      this.charts = [];
+    });
   }
 
   addChartVisualizations(): void {
