@@ -18,7 +18,7 @@ def get_data(filename):
     devices = set()
     segments_to_data = {}
     if (filename in saved_data):
-        return saved_data[filename][0], saved_data[filename][1]
+        return saved_data[filename][0], saved_data[filename][1], saved_data[filename][2]
     with open(filename) as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
@@ -28,5 +28,5 @@ def get_data(filename):
                 segments_to_data[(row['country'], row['device'])] = data_pb2.SegmentData(country=row['country'],
                                                                                          device=row['device'])
             add_data(segments_to_data[(row['country'], row['device'])], row['date'], row['impressions'])
-    saved_data[filename] = (segments_to_data, countries)
+    saved_data[filename] = (segments_to_data, countries, devices)
     return segments_to_data, countries, devices
