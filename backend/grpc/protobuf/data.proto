@@ -21,6 +21,7 @@ message SegmentData {
 message SegmentedTimelineDataResponse {
     repeated SegmentData data = 1;
     repeated string countries = 2;
+    repeated string devices = 3;
 }
 
 message SegmentedTimelineCompareResponse {

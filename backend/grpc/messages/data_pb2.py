@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\ndata.proto\x12\x06\x64\x61tapb\x1a\x1fgoogle/protobuf/timestamp.proto\"0\n\x1cSegmentedTimelineDataRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"t\n\x0bSegmentData\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x19\n\x11inventory_volumes\x18\x04 \x03(\x05\"U\n\x1dSegmentedTimelineDataResponse\x12!\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x13.datapb.SegmentData\x12\x11\n\tcountries\x18\x02 \x03(\t\"\xa0\x01\n SegmentedTimelineCompareResponse\x12<\n\roriginal_data\x18\x01 \x01(\x0b\x32%.datapb.SegmentedTimelineDataResponse\x12>\n\x0f\x63omparison_data\x18\x02 \x01(\x0b\x32%.datapb.SegmentedTimelineDataResponse\"\xc9\x01\n\x12SegmentedDataError\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\r\n\x05\x65rror\x18\x04 \x03(\x02\x12\x0b\n\x03min\x18\x05 \x01(\x02\x12\x0b\n\x03max\x18\x06 \x01(\x02\x12\x0e\n\x06median\x18\x07 \x01(\x02\x12\x16\n\x0e\x66irst_quartile\x18\x08 \x01(\x02\x12\x16\n\x0ethird_quartile\x18\t \x01(\x02\"H\n\x1aSegmentedDataErrorResponse\x12*\n\x06\x65rrors\x18\x01 \x03(\x0b\x32\x1a.datapb.SegmentedDataError2o\n\x04\x44\x61ta\x12g\n\x18getSegmentedTimelineData\x12$.datapb.SegmentedTimelineDataRequest\x1a%.datapb.SegmentedTimelineDataResponseb\x06proto3'
+  serialized_pb=b'\n\ndata.proto\x12\x06\x64\x61tapb\x1a\x1fgoogle/protobuf/timestamp.proto\"0\n\x1cSegmentedTimelineDataRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"t\n\x0bSegmentData\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x19\n\x11inventory_volumes\x18\x04 \x03(\x05\"f\n\x1dSegmentedTimelineDataResponse\x12!\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x13.datapb.SegmentData\x12\x11\n\tcountries\x18\x02 \x03(\t\x12\x0f\n\x07\x64\x65vices\x18\x03 \x03(\t\"\xa0\x01\n SegmentedTimelineCompareResponse\x12<\n\roriginal_data\x18\x01 \x01(\x0b\x32%.datapb.SegmentedTimelineDataResponse\x12>\n\x0f\x63omparison_data\x18\x02 \x01(\x0b\x32%.datapb.SegmentedTimelineDataResponse\"\xc9\x01\n\x12SegmentedDataError\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\r\n\x05\x65rror\x18\x04 \x03(\x02\x12\x0b\n\x03min\x18\x05 \x01(\x02\x12\x0b\n\x03max\x18\x06 \x01(\x02\x12\x0e\n\x06median\x18\x07 \x01(\x02\x12\x16\n\x0e\x66irst_quartile\x18\x08 \x01(\x02\x12\x16\n\x0ethird_quartile\x18\t \x01(\x02\"H\n\x1aSegmentedDataErrorResponse\x12*\n\x06\x65rrors\x18\x01 \x03(\x0b\x32\x1a.datapb.SegmentedDataError2o\n\x04\x44\x61ta\x12g\n\x18getSegmentedTimelineData\x12$.datapb.SegmentedTimelineDataRequest\x1a%.datapb.SegmentedTimelineDataResponseb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
 
@@ -134,6 +134,13 @@ _SEGMENTEDTIMELINEDATARESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='devices', full_name='datapb.SegmentedTimelineDataResponse.devices', index=2,
+      number=3, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -147,7 +154,7 @@ _SEGMENTEDTIMELINEDATARESPONSE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=223,
-  serialized_end=308,
+  serialized_end=325,
 )
 
 
@@ -185,8 +192,8 @@ _SEGMENTEDTIMELINECOMPARERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=311,
-  serialized_end=471,
+  serialized_start=328,
+  serialized_end=488,
 )
 
 
@@ -273,8 +280,8 @@ _SEGMENTEDDATAERROR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=474,
-  serialized_end=675,
+  serialized_start=491,
+  serialized_end=692,
 )
 
 
@@ -305,8 +312,8 @@ _SEGMENTEDDATAERRORRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=677,
-  serialized_end=749,
+  serialized_start=694,
+  serialized_end=766,
 )
 
 _SEGMENTDATA.fields_by_name['dates'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
@@ -374,8 +381,8 @@ _DATA = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=751,
-  serialized_end=862,
+  serialized_start=768,
+  serialized_end=879,
   methods=[
   _descriptor.MethodDescriptor(
     name='getSegmentedTimelineData',
