@@ -38,6 +38,18 @@ period_groups = {
 
 
 def group_segment_data_by_time_period(data, time_period):
+    """
+
+    This function receives a dictionary with (country, device) tuples for keys and SegmentData for values.
+    The data in each of this segments is then compressed. This is done by only saving the first day from the
+    beginning of each time period ( eg. first ady of the week) and the sum of the inventory volumes for all of
+    the days during this period.
+    Note that time periods with incomplete information will bee omitted.
+
+    :param data: dict A dict that has (country, device) tuples for keys and data_pb2.SegmentData for values
+    :param time_period: string A string that indicates the length of the time period by which to group the data
+    :return: dict  A dict that has (country, device) tuples for keys and data_pb2.SegmentData for values
+    """
     if time_period == 'day':
         return data
     new_data = {}
@@ -56,6 +68,13 @@ def group_by_time_period(dates, values, time_period):
 
 
 def get_first_week_beginning(dates):
+    """
+
+    This method takes a list of dates as a parameter and returns the index of the first monday in the list.
+
+    :param dates: list A list of dates
+    :return: int The index of the first Monday
+    """
     for i, date in enumerate(dates):
         weekday = datetime.fromtimestamp(date.seconds).weekday()
         if weekday == 0:
@@ -64,6 +83,14 @@ def get_first_week_beginning(dates):
 
 
 def get_first_month_beginning(dates):
+    """
+
+    This method takes a list of dates as a parameter and returns the index of the first date
+    that is a beginning of a month.
+
+    :param dates: list A list of dates
+    :return: int The index of the first date that marks the beginning of a month
+    """
     for i, date in enumerate(dates):
         day = datetime.fromtimestamp(date.seconds).day
         if day == 1:
@@ -72,9 +99,28 @@ def get_first_month_beginning(dates):
 
 
 def get_days_in_month(timestamp):
+    """
+
+    This method gets a date as a parameter. From its month and year
+    this method gets and returns the number of days that make up
+    the month.
+
+    :param timestamp: google.protobuf.timestamp_pb2 The date that has information for the month and year
+    :return: int Number of days that the month has
+    """
     date = datetime.fromtimestamp(timestamp)
     return monthrange(date.year, date.month)[1]
 
 
 def sum_values_by_amount_of_days(days, first_day, values):
+    """
+
+    This method receives a list of values and returns the sum of its values
+    at positions that belong to the interval [first_day;first_day + days)
+
+    :param days: int Size of the interval
+    :param first_day: int First position
+    :param values: list List of values whose sublist the methods sums up
+    :return: int Sum of the values at positions between first_day and first_day + days in the list
+    """
     return sum(values[first_day: first_day + days])
