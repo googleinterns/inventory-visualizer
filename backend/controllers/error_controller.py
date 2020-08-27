@@ -37,7 +37,7 @@ def get_error(segment1, segment2):
             error.dates.append(segment1.dates[index1])
         index1 = index1 + 1
         index2 = index2 + 1
-        index1, index2 = get_next_same_date_indexes(segment1.dates, segment2.dates, index1, index2)
+        index1, index2 = get_first_same_date_indexes_in_sublists(segment1.dates, segment2.dates, index1, index2)
     error.min = min(error.error)
     error.max = max(error.error)
     quartiles = percentile(asarray(error.error), [25, 50, 75])
@@ -58,17 +58,17 @@ def get_index_with_first_difference(segment1, segment2):
     :param segment2: data_pb2.SegmentedData This is the second segment
     :return: int, int Two indices that mark the position of the first difference between the two arrays
     """
-    index1, index2 = get_next_same_date_indexes(segment1.dates, segment2.dates, 0, 0)
+    index1, index2 = get_first_same_date_indexes_in_sublists(segment1.dates, segment2.dates, 0, 0)
     if index1 == -1:
         return -1, -1
     while segment1.inventory_volumes[index1] == segment2.inventory_volumes[index2]:
-        index1, index2 = get_next_same_date_indexes(segment1.dates, segment2.dates, index1, index2)
+        index1, index2 = get_first_same_date_indexes_in_sublists(segment1.dates, segment2.dates, index1, index2)
         if index1 == -1:
             return -1, -1
     return index1, index2
 
 
-def get_next_same_date_indexes(dates1, dates2, index1, index2):
+def get_first_same_date_indexes_in_sublists(dates1, dates2, index1, index2):
     """
 
     This method get two lists of dates and two starting positions from respectively
@@ -87,8 +87,8 @@ def get_next_same_date_indexes(dates1, dates2, index1, index2):
     if dates1[index1].seconds == dates2[index2].seconds:
         return index1, index2
     if dates1[index1].seconds < dates2[index2].seconds:
-        return get_next_same_date_indexes(dates1, dates2, index1 + 1, index2)
-    return get_next_same_date_indexes(dates1, dates2, index1, index2 + 1)
+        return get_first_same_date_indexes_in_sublists(dates1, dates2, index1 + 1, index2)
+    return get_first_same_date_indexes_in_sublists(dates1, dates2, index1, index2 + 1)
 
 
 class Error(Resource):
