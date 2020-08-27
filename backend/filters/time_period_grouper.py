@@ -63,7 +63,7 @@ def group_segment_data_by_time_period(data, time_period):
 
 def group_by_time_period(dates, values, time_period):
     if time_period in period_groups:
-        dates, values = period_groups[time_period](dates, value)
+        dates, values = period_groups[time_period](dates, values)
     return dates, values
 
 
