@@ -54,6 +54,7 @@ class Data(object):
             options=(),
             channel_credentials=None,
             call_credentials=None,
+            insecure=False,
             compression=None,
             wait_for_ready=None,
             timeout=None,
@@ -62,4 +63,4 @@ class Data(object):
             data__pb2.SegmentedTimelineDataRequest.SerializeToString,
             data__pb2.SegmentedTimelineDataResponse.FromString,
             options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
