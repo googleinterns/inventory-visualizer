@@ -93,8 +93,8 @@ def get_first_same_date_indexes_in_sublists(dates1, dates2, index1, index2):
 
 class Error(Resource):
     def get(self, filename1, filename2):
-        data1, _ = get_data(os.path.join(config.UPLOAD_FOLDER, secure_filename(filename1)))
-        data2, _ = get_data(os.path.join(config.UPLOAD_FOLDER, secure_filename(filename2)))
+        data1, _, _ = get_data(os.path.join(config.UPLOAD_FOLDER, secure_filename(filename1)))
+        data2, _, _ = get_data(os.path.join(config.UPLOAD_FOLDER, secure_filename(filename2)))
         errors = sorted([get_error(data1[tuple], data2[tuple]) for tuple in data1.keys()], key=lambda x: x.median,
                         reverse=True)
         error_importance_by_files[(filename1, filename2)] = [(error.country, error.device) for error in errors]
@@ -111,9 +111,9 @@ class Comparator(Resource):
             abort(400, 'page and per_page values should be numbers')
         filename1 = secure_filename(original_filename)
         filename2 = secure_filename(filename_for_comparison)
-        original_data, original_file_countries = get_data(
+        original_data, _, _ = get_data(
             os.path.join(config.UPLOAD_FOLDER, filename1))
-        comparison_data, comparison_file_countries = get_data(
+        comparison_data, _, _ = get_data(
             os.path.join(config.UPLOAD_FOLDER, filename2))
         data_filter = DataFilter(request.args)
         filtered_original_data = data_filter.filter(original_data)
