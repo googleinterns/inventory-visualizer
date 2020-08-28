@@ -13,7 +13,7 @@ from filters.time_period_grouper import group_segment_data_by_time_period
 error_importance_by_files = {}
 
 
-def get_error(segment1, segment2):
+def get_error(segment1, segment2, time_period):
     """
 
     This function takes two segments as parameters, and starts iterating over their dates and
@@ -37,9 +37,7 @@ def get_error(segment1, segment2):
             current_error = (value2 - value1) / value1
             error.error.append(current_error)
             error.dates.append(segment1.dates[index1])
-            weight = 30 / len(error.error) if len(error.error) >= 30 else 1
-            weighted_error = weight * abs(value2 - value1) / value1
-            weighted_errors.append(weighted_error)
+            weighted_errors.append(config.error_significance_function(value1, value2, len(error.error), time_period))
         index1 = index1 + 1
         index2 = index2 + 1
         index1, index2 = get_first_same_date_indexes_in_sublists(segment1.dates, segment2.dates, index1, index2)
@@ -104,7 +102,8 @@ class Error(Resource):
         time_period = request.args.get('time_period') if request.args.get('time_period') else config.time_period
         data1 = group_segment_data_by_time_period(data1, time_period)
         data2 = group_segment_data_by_time_period(data2, time_period)
-        errors = sorted([get_error(data1[tuple], data2[tuple]) for tuple in data1.keys()], key=lambda x: x.weighted_error_average,
+        errors = sorted([get_error(data1[tuple], data2[tuple], time_period) for tuple in data1.keys()],
+                        key=lambda x: x.weighted_error_average,
                         reverse=True)
         error_importance_by_files[(filename1, filename2)] = [(error.country, error.device) for error in errors]
         response = data_pb2.SegmentedDataErrorResponse(errors=errors)
@@ -135,7 +134,8 @@ class Comparator(Resource):
         comparison_segmented_timeline_data = data_pb2.SegmentedTimelineDataResponse()
 
         if (filename1, filename2) not in error_importance_by_files:
-            errors = sorted([get_error(original_data[tuple], comparison_data[tuple]) for tuple in original_data.keys()],
+            errors = sorted([get_error(original_data[tuple], comparison_data[tuple], time_period) for tuple in
+                             original_data.keys()],
                             key=lambda x: x.median,
                             reverse=True)
             error_importance_by_files[(filename1, filename2)] = [(error.country, error.device) for error in errors]
