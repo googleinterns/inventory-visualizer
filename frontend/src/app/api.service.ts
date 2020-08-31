@@ -67,7 +67,7 @@ export class ApiService {
    * @param string filename2 The name of the second file with the comaprison data
    * @param object filters Filters for the data. This is an object with fields: countries, device, fromDate, toDate, timePeriod
    */
-  getErrorData(filename, filename2, filters): Observable<object> {
+  getErrorMetricsData(filename, filename2, filters): Observable<object> {
     const params = this.buildFilter(filters, new HttpParams());
     return this.http.get(
       environment.apiRest + 'error/' + filename + '/' + filename2,

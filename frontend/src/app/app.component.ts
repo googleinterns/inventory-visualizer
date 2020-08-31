@@ -67,12 +67,19 @@ export class AppComponent {
     countries: string[];
     fromDate: string;
     toDate: string;
+    timePeriod: string;
   };
   fromDate: string;
   toDate: string;
   countries = [];
   devices = [];
+  timePeriods = [
+    { id: 'day', name: 'Daily' },
+    { id: 'week', name: 'Weekly' },
+    { id: 'month', name: 'Monthly' },
+  ];
   selectedDeviceId: string;
+  selectedTimePeriodId: string;
   selectedCountryIds: string[];
 
   constructor(private api: ApiService, private modalService: NgbModal) {
@@ -86,19 +93,25 @@ export class AppComponent {
       countries: [],
       fromDate: null,
       toDate: null,
+      timePeriod: null,
     };
   }
 
   openFilterModal(content): void {
     this.modalService
-      .open(content, { ariaLabelledBy: 'filter-modal' })
+      .open(content, { ariaLabelledBy: 'modal-basic-title' })
       .result.then(
         (result) => {
           this.filtered = true;
           this.saveFilters();
           this.page = 0;
           this.clearChild(true);
-          this.getData();
+          this.sendFiltersToChild(this.filters);
+          if (this.files.length === 1) {
+            this.getData();
+          } else {
+            this.getErrorMetricsData();
+          }
         },
         (reason) => {
           this.filtered = false;
@@ -109,7 +122,11 @@ export class AppComponent {
 
   scrollHandler(): void {
     this.page += 1;
-    this.getData();
+    if (this.files.length === 1) {
+      this.getData();
+    } else {
+      this.getComparisonData();
+    }
   }
 
   public handleFileInput(files: FileList): void {
@@ -122,7 +139,7 @@ export class AppComponent {
     this.page = 0;
     this.files.push(files[0].name);
     this.api.uploadFile(files).subscribe((response) => {
-      this.getErrorData();
+      this.getErrorMetricsData();
     });
   }
 
@@ -182,8 +199,8 @@ export class AppComponent {
       });
   }
 
-  getErrorData(): void {
-    this.api.getErrorData(this.files[0], this.files[1], this.filters).subscribe((res) => {
+  getErrorMetricsData(): void {
+    this.api.getErrorMetricsData(this.files[0], this.files[1], this.filters).subscribe((res) => {
       const compareResponse = SegmentedDataErrorResponse.fromJSON(res);
       this.giveErrorDataToChild(compareResponse);
       this.getComparisonData();
@@ -195,6 +212,7 @@ export class AppComponent {
     this.filters.countries = this.selectedCountryIds;
     this.filters.toDate = this.toDate;
     this.filters.fromDate = this.fromDate;
+    this.filters.timePeriod = this.selectedTimePeriodId;
   }
 
   discardFilters(): void {
@@ -202,5 +220,6 @@ export class AppComponent {
     this.selectedCountryIds = this.filters.countries;
     this.fromDate = this.filters.fromDate;
     this.toDate = this.filters.toDate;
+    this.selectedTimePeriodId = this.filters.timePeriod;
   }
 }

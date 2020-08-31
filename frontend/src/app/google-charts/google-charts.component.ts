@@ -66,7 +66,7 @@ export class GoogleChartsComponent implements AfterViewInit {
     });
   }
 
-  buildDateForCharts(date) {
+  buildDateForCharts(date): string {
     const day = date.getDate();
     const month = date.toLocaleString('default', {
       month: 'short',
@@ -181,7 +181,7 @@ export class GoogleChartsComponent implements AfterViewInit {
   addRemainingValues(dataTable, segment, index): void {
     while (index < segment.dates.length) {
       dataTable.push([
-        segment.dates[index],
+        this.buildDateForCharts(segment.dates[index]),
         null,
         segment.inventoryVolumes[index],
         null,
@@ -306,7 +306,7 @@ export class GoogleChartsComponent implements AfterViewInit {
     );
 
     chart.draw(dataTable, {
-      title: 'Box Plot',
+      title: 'Error Metrics',
       height: window.innerHeight,
       width: window.innerWidth,
       legend: { position: 'none' },
