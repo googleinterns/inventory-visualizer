@@ -39,6 +39,7 @@ message SegmentedDataError {
     float median = 7;
     float first_quartile = 8;
     float third_quartile = 9;
+    float weighted_error_average = 10;
 }
 
 message SegmentedDataErrorResponse {
