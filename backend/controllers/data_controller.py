@@ -25,4 +25,5 @@ class Data(Resource):
         response = data_pb2.SegmentedTimelineDataResponse()
         response.data.extend(list(filtered_data.values())[(page * per_page):(page * per_page + per_page)])
         response.countries.extend(countries)
+        response.countries.extend(devices)
         return MessageToDict(response)
