@@ -1,39 +1,85 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {environment} from '../environments/environment';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) {
-  }
-  
   /**
-  * @description This method makes an http call and fetches the data from the specified file and a specific page.
-  * The data can be filtered by country, device and time range.
-  *  
-  * @param {string=} filename The name of the file to take the data from
-  * @param {number=} page The page to take the data from from the paginated response
-  * @param {number=} perPage The amount of segments to fetch
-  * @param {object=} filters Filters for the data. This is an object with fields: countries, device, fromDate, toDate
-  */
-  getSegmentedData(filename, page = 0, perPage = 8, filters = null): Observable<object> {
+   * @description This method makes an http call and fetches the data from the specified file and a specific page.
+   * The data can be filtered by country, device and time range.
+   *
+   * @param string filename The name of the file to take the data from
+   * @param number page The page to take the data from from the paginated response
+   * @param number perPage The amount of segments to fetch
+   * @param object filters Filters for the data. This is an object with fields: countries, device, fromDate, toDate, timePeriod
+   */
+  getSegmentedData(
+    filename,
+    page = 0,
+    perPage = 8,
+    filters = null
+  ): Observable<object> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('per_page', perPage.toString());
     params = this.buildFilter(filters, params);
-    return this.http.get(environment.apiRest + 'data/' + filename, {params});
+    return this.http.get(environment.apiRest + 'data/' + filename, { params });
   }
 
   /**
-  * @description This method makes an http post call to upload a file
-  *  
-  * @param {FileList=} files a list of files
-  */
+   * @description This method makes an http call and fetches the data from the specified file and a specific page.
+   * The data can be filtered by country, device and time range.
+   *
+   * @param string filename1 The name of the first file to take the data from
+   * @param string filename2 The name of the second file with the comaprison data
+   * @param number page The page to take the data from from the paginated response
+   * @param number perPage The amount of segments to fetch
+   * @param object filters Filters for the data. This is an object with fields: countries, device, fromDate, toDate, timePeriod
+   */
+  getComparisonData(
+    filename,
+    filename2,
+    page = 0,
+    perPage = 8,
+    filters = null
+  ): Observable<object> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('per_page', perPage.toString());
+    params = this.buildFilter(filters, params);
+    return this.http.get(
+      environment.apiRest + 'compare/' + filename + '/' + filename2,
+      { params }
+    );
+  }
+
+  /**
+   * @description This method makes an http call and fetches the data from the specified file and a specific page.
+   * The data can be filtered by country, device and time range.
+   *
+   * @param string filename1 The name of the first file to take the data from
+   * @param string filename2 The name of the second file with the comaprison data
+   * @param object filters Filters for the data. This is an object with fields: countries, device, fromDate, toDate, timePeriod
+   */
+  getErrorData(filename, filename2, filters): Observable<object> {
+    const params = this.buildFilter(filters, new HttpParams());
+    return this.http.get(
+      environment.apiRest + 'error/' + filename + '/' + filename2,
+      { params }
+    );
+  }
+
+  /**
+   * @description This method makes an http post call to upload a file
+   *
+   * @param FileList files a list of files
+   */
   uploadFile(files): Observable<object> {
     const formData: FormData = new FormData();
     formData.append('uploaded_data', files[0], files[0].name);
@@ -41,14 +87,13 @@ export class ApiService {
   }
 
   /**
-  * @description This method makes an http delete call to delete a file
-  *  
-  * @param {FileList=} files a list of files
-  */
+   * @description This method makes an http delete call to delete a file
+   *
+   * @param FileList files a list of files
+   */
   deleteFile(files): void {
-    const params = new HttpParams()
-      .set('filename', files[0].name);
-    this.http.delete(environment.apiRest + 'file', {params});
+    const params = new HttpParams().set('filename', files[0].name);
+    this.http.delete(environment.apiRest + 'file', { params });
   }
 
   buildFilter(filters, params): HttpParams {
@@ -58,7 +103,11 @@ export class ApiService {
     if (filters.device != null) {
       params = params.set('devices', filters.device);
     }
-    if (filters.countries && filters.countries !== [] && filters.countries.length !== 0) {
+    if (
+      filters.countries &&
+      filters.countries !== [] &&
+      filters.countries.length !== 0
+    ) {
       params = params.set('countries', filters.countries.join([',']));
     }
     if (filters.fromDate != null) {
@@ -69,7 +118,7 @@ export class ApiService {
       const date = new Date(filters.toDate);
       params = params.set('end_date', (date.getTime() / 1000).toString());
     }
+
     return params;
   }
 }
-

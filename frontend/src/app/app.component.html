@@ -71,6 +71,11 @@
     <i class="fa fa-line-chart"></i>
   </div>
 
+  <div class="compare">
+    <input type="file" accept=".csv" (change)="handleComparisonInput($event.target.files)" />
+    <i class="fa fa-balance-scale"></i>
+  </div>
+
   <div class="filter">
     <button class="button" (click)="openFilterModal(content)"></button>
     <i class="fa fa-filter"></i>

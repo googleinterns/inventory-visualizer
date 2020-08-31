@@ -5,24 +5,22 @@
   [infiniteScrollThrottle]="50"
   (scrolled)="onScroll()"
 >
+  <div style="position: relative;" id="chart_div"></div>
 
   <div *ngFor="let i of charts">
     <div>
-      <google-chart #chart
-                    [title]="i.title"
-                    [type]="i.type"
-                    [data]="i.data"
-                    [columns]="i.columns"
-                    [options]="i.options">
+      <google-chart
+        #chart
+        [title]="i.title"
+        [type]="i.type"
+        [data]="i.data"
+        [columns]="i.columns"
+        [options]="i.options"
+        [formatters]="i.options.formatters"
+      >
       </google-chart>
     </div>
   </div>
-  <ngx-spinner
-    bdOpacity = 0.5
-    bdColor = ""
-    size = "large"
-    color = "#2590EB"
-  >
+  <ngx-spinner bdOpacity="0.5" bdColor="" size="large" color="#2590EB">
   </ngx-spinner>
 </div>
-

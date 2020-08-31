@@ -2,7 +2,9 @@ import { Component, Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import {
   SegmentedTimelineDataResponse,
-  SegmentData
+  SegmentData,
+  SegmentedTimelineCompareResponse,
+  SegmentedDataErrorResponse
 } from './proto/protobuf/data';
 import { Subject } from 'rxjs';
 import {
@@ -51,6 +53,8 @@ export class AppComponent {
   page: number;
 
   updateCharts: Subject<any> = new Subject();
+  compareData: Subject<any> = new Subject();
+  errorData: Subject<any> = new Subject();
   clearCharts: Subject<any> = new Subject();
   updateFilters: Subject<any> = new Subject();
 
@@ -113,6 +117,15 @@ export class AppComponent {
     this.uploadFile(files);
   }
 
+  public handleComparisonInput(files: FileList): void {
+    this.clearChild(true);
+    this.page = 0;
+    this.files.push(files[0].name);
+    this.api.uploadFile(files).subscribe((response) => {
+      this.getErrorData();
+    });
+  }
+
   public uploadFile(file): void {
     this.api.uploadFile(file).subscribe((response) => {
       this.getData();
@@ -123,8 +136,20 @@ export class AppComponent {
     this.updateCharts.next(changes);
   }
 
+  triggerChildComparison(changes): void {
+    this.compareData.next(changes);
+  }
+
+  giveErrorDataToChild(changes): void {
+    this.errorData.next(changes);
+  }
+
   clearChild(changes): void {
     this.clearCharts.next(changes);
+  }
+
+  sendFiltersToChild(changes): void {
+    this.updateFilters.next(changes);
   }
 
   getData(): void {
@@ -139,6 +164,30 @@ export class AppComponent {
         this.signalChildForChartUpdates(this.segments);
         this.hasDisplayedData = true;
       });
+  }
+
+  getComparisonData(): void {
+    this.api
+      .getComparisonData(
+        this.files[0],
+        this.files[1],
+        this.page,
+        8,
+        this.filters
+      )
+      .subscribe((res) => {
+        const compareResponse = SegmentedTimelineCompareResponse.fromJSON(res);
+        this.triggerChildComparison(compareResponse);
+        this.hasDisplayedData = true;
+      });
+  }
+
+  getErrorData(): void {
+    this.api.getErrorData(this.files[0], this.files[1], this.filters).subscribe((res) => {
+      const compareResponse = SegmentedDataErrorResponse.fromJSON(res);
+      this.giveErrorDataToChild(compareResponse);
+      this.getComparisonData();
+    });
   }
 
   saveFilters(): void {
