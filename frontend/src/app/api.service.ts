@@ -118,7 +118,9 @@ export class ApiService {
       const date = new Date(filters.toDate);
       params = params.set('end_date', (date.getTime() / 1000).toString());
     }
-
+    if (filters.timePeriod != null) {
+      params = params.set('time_period', filters.timePeriod);
+    }
     return params;
   }
 }

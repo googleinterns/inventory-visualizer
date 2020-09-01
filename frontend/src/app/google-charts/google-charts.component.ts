@@ -73,19 +73,31 @@ export class GoogleChartsComponent implements AfterViewInit {
     });
     const year = date.getFullYear();
     if (!this.appliedFilters || !this.appliedFilters.timePeriod) {
-      return day.toString() + ' ' + month + ' ' + year.toString();
+      const nextDate = new Date(date);
+      nextDate.setDate(date.getDate() + 7);
+      const day2 = nextDate.getDate();
+      const month2 = nextDate.toLocaleString('default', {
+        month: 'short',
+      });
+      const year2 = nextDate.getFullYear();
+      return (
+        day.toString() +
+        ' ' +
+        month +
+        ' ' +
+        year.toString() +
+        ' - ' +
+        day2.toString() +
+        ' ' +
+        month2 +
+        ' ' +
+        year2.toString()
+      );
     }
     if (this.appliedFilters.timePeriod === 'month') {
       return month + ' ' + year.toString();
     }
-    const nextDate = new Date(date);
-    nextDate.setDate(date.getDate() + 7);
-    const day2 = nextDate.getDate();
-    const month2 = nextDate.toLocaleString('default', {
-      month: 'short',
-    });
-    const year2 = nextDate.getFullYear();
-    return day.toString() + ' ' + month + ' ' + year.toString() + ' - ' + day2.toString() + ' ' + month2 + ' ' + year2.toString();
+    return day.toString() + ' ' + month + ' ' + year.toString();
   }
 
   addComparisonVisualizations(): void {
@@ -134,12 +146,7 @@ export class GoogleChartsComponent implements AfterViewInit {
         this.addRemainingValues(dataTable, original[j], originalIndex);
         this.addRemainingValues(dataTable, comparison[j], comparisonIndex);
         this.addToCharts(
-          [
-            'Date',
-            'file1',
-            'file2',
-            'error',
-          ],
+          ['Date', 'file1', 'file2', 'error'],
           dataTable,
           original[j].country + ' ' + original[j].device
         );
