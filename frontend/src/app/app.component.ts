@@ -2,7 +2,9 @@ import { Component, Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import {
   SegmentedTimelineDataResponse,
-  SegmentData
+  SegmentData,
+  SegmentedTimelineCompareResponse,
+  SegmentedDataErrorResponse
 } from './proto/protobuf/data';
 import { Subject } from 'rxjs';
 import {
@@ -51,6 +53,8 @@ export class AppComponent {
   page: number;
 
   updateCharts: Subject<any> = new Subject();
+  compareData: Subject<any> = new Subject();
+  errorData: Subject<any> = new Subject();
   clearCharts: Subject<any> = new Subject();
   updateFilters: Subject<any> = new Subject();
 
@@ -63,12 +67,19 @@ export class AppComponent {
     countries: string[];
     fromDate: string;
     toDate: string;
+    timePeriod: string;
   };
   fromDate: string;
   toDate: string;
   countries = [];
   devices = [];
+  timePeriods = [
+    { id: 'day', name: 'Daily' },
+    { id: 'week', name: 'Weekly' },
+    { id: 'month', name: 'Monthly' },
+  ];
   selectedDeviceId: string;
+  selectedTimePeriodId: string;
   selectedCountryIds: string[];
 
   constructor(private api: ApiService, private modalService: NgbModal) {
@@ -82,19 +93,25 @@ export class AppComponent {
       countries: [],
       fromDate: null,
       toDate: null,
+      timePeriod: null,
     };
   }
 
   openFilterModal(content): void {
     this.modalService
-      .open(content, { ariaLabelledBy: 'filter-modal' })
+      .open(content, { ariaLabelledBy: 'modal-basic-title' })
       .result.then(
         (result) => {
           this.filtered = true;
           this.saveFilters();
           this.page = 0;
           this.clearChild(true);
-          this.getData();
+          this.sendFiltersToChild(this.filters);
+          if (this.files.length === 1) {
+            this.getData();
+          } else {
+            this.getErrorMetricsData();
+          }
         },
         (reason) => {
           this.filtered = false;
@@ -105,12 +122,25 @@ export class AppComponent {
 
   scrollHandler(): void {
     this.page += 1;
-    this.getData();
+    if (this.files.length === 1) {
+      this.getData();
+    } else {
+      this.getComparisonData();
+    }
   }
 
   public handleFileInput(files: FileList): void {
     this.files.push(files[0].name);
     this.uploadFile(files);
+  }
+
+  public handleComparisonInput(files: FileList): void {
+    this.clearChild(true);
+    this.page = 0;
+    this.files.push(files[0].name);
+    this.api.uploadFile(files).subscribe((response) => {
+      this.getErrorMetricsData();
+    });
   }
 
   public uploadFile(file): void {
@@ -123,8 +153,20 @@ export class AppComponent {
     this.updateCharts.next(changes);
   }
 
+  triggerChildComparison(changes): void {
+    this.compareData.next(changes);
+  }
+
+  giveErrorDataToChild(changes): void {
+    this.errorData.next(changes);
+  }
+
   clearChild(changes): void {
     this.clearCharts.next(changes);
+  }
+
+  sendFiltersToChild(changes): void {
+    this.updateFilters.next(changes);
   }
 
   getData(): void {
@@ -141,11 +183,36 @@ export class AppComponent {
       });
   }
 
+  getComparisonData(): void {
+    this.api
+      .getComparisonData(
+        this.files[0],
+        this.files[1],
+        this.page,
+        8,
+        this.filters
+      )
+      .subscribe((res) => {
+        const compareResponse = SegmentedTimelineCompareResponse.fromJSON(res);
+        this.triggerChildComparison(compareResponse);
+        this.hasDisplayedData = true;
+      });
+  }
+
+  getErrorMetricsData(): void {
+    this.api.getErrorMetricsData(this.files[0], this.files[1], this.filters).subscribe((res) => {
+      const compareResponse = SegmentedDataErrorResponse.fromJSON(res);
+      this.giveErrorDataToChild(compareResponse);
+      this.getComparisonData();
+    });
+  }
+
   saveFilters(): void {
     this.filters.device = this.selectedDeviceId;
     this.filters.countries = this.selectedCountryIds;
     this.filters.toDate = this.toDate;
     this.filters.fromDate = this.fromDate;
+    this.filters.timePeriod = this.selectedTimePeriodId;
   }
 
   discardFilters(): void {
@@ -153,5 +220,6 @@ export class AppComponent {
     this.selectedCountryIds = this.filters.countries;
     this.fromDate = this.filters.fromDate;
     this.toDate = this.filters.toDate;
+    this.selectedTimePeriodId = this.filters.timePeriod;
   }
 }

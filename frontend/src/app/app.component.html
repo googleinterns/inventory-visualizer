@@ -5,8 +5,8 @@
   </div>
 </div>
 
-<app-google-charts (scrolled)="scrollHandler()" [changing]="updateCharts" [clear]="clearCharts"
-  [filters]="updateFilters">
+<app-google-charts (scrolled)="scrollHandler()" [changing]="updateCharts" [compare]="compareData" [clear]="clearCharts"
+  [error]="errorData" [filters]="updateFilters">
 </app-google-charts>
 
 <ng-template #content let-modal>
@@ -18,7 +18,15 @@
   </div>
 
   <div>
-    <ng-select [items]="devices" bindLabel="code" bindValue="code" [multiple]="false" placeholder="Select a device"
+    <ng-select [items]="countries" bindLabel="code" bindValue="code" [multiple]="true" [closeOnSelect]="false"
+      placeholder="Select countries" [(ngModel)]="selectedCountryIds">
+    </ng-select>
+  </div>
+
+  <br>
+
+  <div>
+    <ng-select [items]="devices" bindLabel="name" bindValue="id" [multiple]="false" placeholder="Select a device"
       [(ngModel)]="selectedDeviceId">
     </ng-select>
   </div>
@@ -26,8 +34,8 @@
   <br>
 
   <div>
-    <ng-select [items]="countries" bindLabel="code" bindValue="code" [multiple]="true" [closeOnSelect]="false"
-      placeholder="Select countries" [(ngModel)]="selectedCountryIds">
+    <ng-select [items]="timePeriods" bindLabel="name" bindValue="id" [multiple]="false"
+      placeholder="Select a time period" [(ngModel)]="selectedTimePeriodId">
     </ng-select>
   </div>
 
@@ -69,6 +77,11 @@
   <div class="file-upload">
     <input type="file" accept=".csv" (change)="handleFileInput($event.target.files)" />
     <i class="fa fa-line-chart"></i>
+  </div>
+
+  <div class="compare">
+    <input type="file" accept=".csv" (change)="handleComparisonInput($event.target.files)" />
+    <i class="fa fa-balance-scale"></i>
   </div>
 
   <div class="filter">
