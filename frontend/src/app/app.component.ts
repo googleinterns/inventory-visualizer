@@ -1,4 +1,4 @@
-import { Component, Injectable } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { ApiService } from './api.service';
 import {
   SegmentedTimelineDataResponse,
@@ -45,7 +45,7 @@ export class CustomAdapter extends NgbDateAdapter<string> {
   styleUrls: ['./app.component.css'],
   providers: [{ provide: NgbDateAdapter, useClass: CustomAdapter }],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Inventory Visualizer';
   dataResponse: SegmentedTimelineDataResponse;
   data: Array<any[]>;
@@ -97,6 +97,23 @@ export class AppComponent {
     };
   }
 
+  ngOnInit(): void {
+    const username = this.generateRandomString(15);
+    this.api.registerUser(username).subscribe((res) => {
+      localStorage.setItem('token', res.token);
+    });
+  }
+
+  generateRandomString(length: number): string {
+    let text = '';
+    const possible =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz';
+    for (let i = 0; i < length; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  }
+
   openFilterModal(content): void {
     this.modalService
       .open(content, { ariaLabelledBy: 'modal-basic-title' })
@@ -139,12 +156,16 @@ export class AppComponent {
     this.page = 0;
     this.files.push(files[0].name);
     this.api.uploadFile(files).subscribe((response) => {
+      localStorage.setItem('token', response.token);
+      this.files[1] = response.filename;
       this.getErrorMetricsData();
     });
   }
 
   public uploadFile(file): void {
     this.api.uploadFile(file).subscribe((response) => {
+      localStorage.setItem('token', response.token);
+      this.files[0] = response.filename;
       this.getData();
     });
   }
@@ -200,11 +221,13 @@ export class AppComponent {
   }
 
   getErrorMetricsData(): void {
-    this.api.getErrorMetricsData(this.files[0], this.files[1], this.filters).subscribe((res) => {
-      const compareResponse = SegmentedDataErrorResponse.fromJSON(res);
-      this.giveErrorDataToChild(compareResponse);
-      this.getComparisonData();
-    });
+    this.api
+      .getErrorMetricsData(this.files[0], this.files[1], this.filters)
+      .subscribe((res) => {
+        const compareResponse = SegmentedDataErrorResponse.fromJSON(res);
+        this.giveErrorDataToChild(compareResponse);
+        this.getComparisonData();
+      });
   }
 
   saveFilters(): void {

@@ -12,6 +12,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { AuthInterceptor } from './auth.interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -29,7 +31,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
     FormsModule,
     NgSelectModule
   ],
-  providers: [ApiService],
+  providers: [ApiService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
