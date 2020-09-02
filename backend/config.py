@@ -15,3 +15,5 @@ error_significance_by_time_period = {
     'month'  : days_with_error_significance / 30,
 }
 error_significance_function = error_significance_classifier.get_error_significance_score
+secret_key_length = 15
+token_validity_period = 24*7*2 # 2 weeks

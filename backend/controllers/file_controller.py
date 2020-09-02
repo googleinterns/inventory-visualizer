@@ -1,8 +1,10 @@
 import os
 from werkzeug.utils import secure_filename
 import config
-from flask_restful import Resource
 from flask import request, abort
+from authentication.auth import issue_token
+from authentication.auth import ProtectedResource
+import time
 
 
 def allowed_file(filename):
@@ -10,7 +12,7 @@ def allowed_file(filename):
             filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS)
 
 
-class File(Resource):
+class File(ProtectedResource):
     def post(self):
         if 'uploaded_data' not in request.files:
             abort(400, 'Uploaded_data is required for the request')
@@ -18,9 +20,16 @@ class File(Resource):
         if file.filename == '':
             abort(400, 'Filename cannot be empty')
         if allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+            filename = request.username + str(int(time.time()))
             file.save(os.path.join(config.UPLOAD_FOLDER, filename))
-            return {'response': 'File uploaded successfully'}
+            user_files = request.filenames
+            user_files.append(filename)
+            jwt_token = issue_token(request.username, user_files)
+            return {
+                'response': 'File uploaded successfully',
+                'token': jwt_token.decode('utf-8'),
+                'filename': filename
+            }
         else:
             abort(415, 'File type is not supported')
 
