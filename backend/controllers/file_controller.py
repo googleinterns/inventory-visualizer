@@ -20,7 +20,7 @@ class File(ProtectedResource):
         if file.filename == '':
             abort(400, 'Filename cannot be empty')
         if allowed_file(file.filename):
-            filename = request.username + str(int(time.time()))
+            filename = secure_filename(request.username + str(int(time.time())))
             file.save(os.path.join(config.UPLOAD_FOLDER, filename))
             user_files = request.filenames
             user_files.append(filename)

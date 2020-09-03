@@ -3,14 +3,14 @@ import jwt
 from flask_restful import Resource
 from flask import request
 from functools import wraps
-from middlewares.access_validator import validate_token, authorize_access_to_file
-from authentication.token_controllerr import TokenControllerSingleton
+from middlewares.access_validator import add_user_information_to_request, authorize_access_to_file
+from authentication.token_controller import TokenControllerSingleton
 import config
 
 def auth_decorator(function):
     @wraps(function)
     def authorize_access(*args, **kwargs):
-        validate_token(request, TokenControllerSingleton.get_secret_key())
+        add_user_information_to_request(request, TokenControllerSingleton.get_secret_key())
         authorize_access_to_file(request)
         return function(*args, **kwargs)
 

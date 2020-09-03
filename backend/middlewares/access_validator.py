@@ -2,7 +2,7 @@ from flask import abort
 import jwt
 
 
-def validate_token(request, secret_key):
+def add_user_information_to_request(request, secret_key):
     auth_header = request.headers.get('Authorization')
     if not auth_header:
         abort(403, 'Bearer token is necessary for authorization')

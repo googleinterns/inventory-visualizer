@@ -6,6 +6,7 @@ per_page = 50
 ALLOWED_EXTENSIONS = {'csv'}
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = ROOT_DIR + '/files'
+SECRET_KEY_FILE = ROOT_DIR + '/key/secret.txt'
 time_period = 'week'
 allowed_time_periods = ['day', 'week', 'month']
 days_with_error_significance = 730
