@@ -80,7 +80,7 @@ export class ApiService {
    *
    * @param FileList files a list of files
    */
-  uploadFile(files): Observable<object> {
+  uploadFile(files): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('uploaded_data', files[0], files[0].name);
     return this.http.post(environment.apiRest + 'file', formData);
@@ -94,6 +94,15 @@ export class ApiService {
   deleteFile(files): void {
     const params = new HttpParams().set('filename', files[0].name);
     this.http.delete(environment.apiRest + 'file', { params });
+  }
+
+  /**
+   * @description This method makes an http post call to get a jwt token for a new user
+   *
+   * @param string The username for the new user
+   */
+  registerUser(username): Observable<any> {
+    return this.http.post(environment.apiRest + 'register', { username });
   }
 
   buildFilter(filters, params): HttpParams {
@@ -124,3 +133,4 @@ export class ApiService {
     return params;
   }
 }
+
