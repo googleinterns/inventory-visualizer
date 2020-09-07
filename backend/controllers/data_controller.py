@@ -1,15 +1,18 @@
 from google.protobuf.json_format import MessageToDict
 from grpc.messages import data_pb2
 import config
-from flask_restful import Resource
+from authentication.auth import ProtectedResource
 from flask import request, abort
 import os
 from werkzeug.utils import secure_filename
 from filters.data_filter import DataFilter
 from data_reader import get_data
-from filters.time_period_grouper import  group_segment_data_by_time_period
+from filters.time_period_grouper import group_segment_data_by_time_period
+from authentication import auth
 
-class Data(Resource):
+
+class Data(ProtectedResource):
+
     def get(self, filename):
         try:
             page = int(request.args.get('page')) if request.args.get('page') else 0

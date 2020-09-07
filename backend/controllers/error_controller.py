@@ -2,6 +2,7 @@ from google.protobuf.json_format import MessageToDict
 from grpc.messages import data_pb2
 import config
 from flask_restful import Resource
+from authentication.auth import ProtectedResource
 from flask import request, abort
 import os
 from werkzeug.utils import secure_filename
@@ -95,7 +96,8 @@ def get_first_same_date_indexes_in_sublists(dates1, dates2, index1, index2):
     return get_first_same_date_indexes_in_sublists(dates1, dates2, index1, index2 + 1)
 
 
-class Error(Resource):
+class Error(ProtectedResource):
+
     def get(self, filename1, filename2):
         data1, _, _ = get_data(os.path.join(config.UPLOAD_FOLDER, secure_filename(filename1)))
         data2, _, _ = get_data(os.path.join(config.UPLOAD_FOLDER, secure_filename(filename2)))
@@ -110,7 +112,8 @@ class Error(Resource):
         return MessageToDict(response)
 
 
-class Comparator(Resource):
+class Comparator(ProtectedResource):
+
     def get(self, original_filename, filename_for_comparison):
         try:
             page = int(request.args.get('page')) if request.args.get('page') else 0
