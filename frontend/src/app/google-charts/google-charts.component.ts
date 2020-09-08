@@ -46,24 +46,39 @@ export class GoogleChartsComponent implements AfterViewInit {
       for (const chart of v) {
         const newData = [];
         for (let i = 0; i < chart.dates.length; i++) {
-          const day = chart.dates[i].getDay() + 1;
-          const month = chart.dates[i].toLocaleString('default', {
-            month: 'short',
-          });
-          const year = chart.dates[i].getFullYear();
-          newData.push([
+          const values = [chart.inventoryVolumes[i]];
+          const tooltip = this.buildTooltip(
             this.buildDateForCharts(chart.dates[i]),
-            chart.inventoryVolumes[i],
-          ]);
+            values,
+            ['file1']
+          );
+          newData.push([chart.dates[i], tooltip, chart.inventoryVolumes[i]]);
         }
         this.addToCharts(
-          ['Date', 'file1'],
+          [
+            { type: 'date' },
+            { role: 'tooltip', type: 'string', p: { html: true } },
+            'file1',
+          ],
           newData,
           chart.country + ' ' + chart.device
         );
       }
+
       this.spinner.hide();
     });
+  }
+
+  buildTooltip(date, values, labels): string {
+    let tooltip = '<div style="padding:5px 5px 5px 5px; display:table-row;"><b>' + date + '</b><table>';
+    for (let i = 0; i < values.length; i++) {
+      if (values[i] != null) {
+        tooltip +=
+          '<tr><td>' + labels[i] + ' : <b>' + values[i] + '</b></td></tr>';
+      }
+    }
+    tooltip += '</table></div>';
+    return tooltip;
   }
 
   buildDateForCharts(date): string {
@@ -114,39 +129,54 @@ export class GoogleChartsComponent implements AfterViewInit {
           originalIndex < original[j].dates.length &&
           comparisonIndex < comparison[j].dates.length
         ) {
-          const column = [];
+          let column = [];
+          const values = [];
           const currentDate =
             original[j].dates[originalIndex].getTime() <
             comparison[j].dates[comparisonIndex].getTime()
               ? original[j].dates[originalIndex]
               : comparison[j].dates[comparisonIndex];
-          column.push(this.buildDateForCharts(currentDate));
+          column.push(currentDate);
           originalIndex += this.addValueForCurrentDate(
             currentDate,
-            column,
+            values,
             original[j].dates[originalIndex],
             original[j].inventoryVolumes[originalIndex]
           );
           comparisonIndex += this.addValueForCurrentDate(
             currentDate,
-            column,
+            values,
             comparison[j].dates[comparisonIndex],
             comparison[j].inventoryVolumes[comparisonIndex]
           );
           if (segmentError) {
             errorIndex += this.addValueForCurrentDate(
               currentDate,
-              column,
+              values,
               segmentError.dates[errorIndex],
               segmentError.error[errorIndex]
             );
           }
+          column.push(
+            this.buildTooltip(this.buildDateForCharts(currentDate), values, [
+              'file1',
+              'file2',
+              'error',
+            ])
+          );
+          column = column.concat(values);
           dataTable.push(column);
         }
-        this.addRemainingValues(dataTable, original[j], originalIndex);
-        this.addRemainingValues(dataTable, comparison[j], comparisonIndex);
+        this.addRemainingValues(dataTable, original[j], originalIndex, 0);
+        this.addRemainingValues(dataTable, comparison[j], comparisonIndex, 1);
         this.addToCharts(
-          ['Date', 'file1', 'file2', 'error'],
+          [
+            { type: 'date' },
+            { role: 'tooltip', type: 'string', p: { html: true } },
+            'file1',
+            'file2',
+            'error',
+          ],
           dataTable,
           original[j].country + ' ' + original[j].device
         );
@@ -185,14 +215,19 @@ export class GoogleChartsComponent implements AfterViewInit {
     return 0;
   }
 
-  addRemainingValues(dataTable, segment, index): void {
+  addRemainingValues(dataTable, segment, index, position): void {
     while (index < segment.dates.length) {
-      dataTable.push([
-        this.buildDateForCharts(segment.dates[index]),
-        null,
-        segment.inventoryVolumes[index],
-        null,
-      ]);
+      const values = [null, null, null];
+      values[position] = segment.inventoryVolumes[index];
+      const column = [
+        segment.dates[index],
+        this.buildTooltip(
+          this.buildDateForCharts(segment.dates[index]),
+          values,
+          ['file1', 'file2', 'error']
+        ),
+      ].concat(values);
+      dataTable.push(column);
       index++;
     }
   }
@@ -256,6 +291,7 @@ export class GoogleChartsComponent implements AfterViewInit {
         width: window.innerWidth,
         height: window.innerHeight * 0.25,
         focusTarget: 'category',
+        tooltip: { isHtml: true },
       },
     };
     this.charts.push(current);
