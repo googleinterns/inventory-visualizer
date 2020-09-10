@@ -48,7 +48,7 @@
   overflow: scroll;
 }
 
-.actions .file-upload, .filter, .compare {
+.actions .file-upload, .filter, .compare, .order {
   height: 50px;
   width: 50px;
   right: 10px;
@@ -65,22 +65,29 @@
 }
 
 .actions .file-upload {
-  bottom: 130px;
+  bottom: 190px;
   position: fixed;
   background-image: linear-gradient(to bottom, #4285F4 50%, #FFFFFF 50%);
 }
 
 .actions .compare {
-  bottom: 70px;
+  bottom: 130px;
   position: fixed;
   background-image: linear-gradient(to bottom, #DB4437 50%, #FFFFFF 50%);
 }
 
 .actions .filter {
-  bottom: 10px;
+  bottom: 70px;
   position: fixed;
   cursor: pointer;
   background-image: linear-gradient(to bottom, #F4B400 50%, #FFFFFF 50%);
+}
+
+.actions .order {
+  bottom: 10px;
+  position: fixed;
+  cursor: pointer;
+  background-image: linear-gradient(to bottom, #0F9D58 50%, #FFFFFF 50%);
 }
 
 .actions .file-upload input[type='file'], .actions .compare input[type='file'] {
@@ -91,14 +98,14 @@
   cursor: pointer;
 }
 
-.actions .filter .button {
+.actions .filter .button, .actions .order .button {
   position: absolute;
   opacity: 0;
   height: 50px;
   width: 50px;
 }
 
-.actions .file-upload:hover, .actions .filter:hover, .actions .compare:hover {
+.actions .file-upload:hover, .actions .filter:hover, .actions .compare:hover, .actions .order:hover {
   background-position: 0 -100%;
   color: #2590EB;
 }
@@ -176,3 +183,29 @@
   border-color: #aaa;
 }
 
+
+/* Style buttons */
+.sortbtn {
+  background-color: white; /* Blue background */
+  border: 2px solid #2590EB; /* Remove borders */
+  background-image: linear-gradient(to bottom, #FFFFFF 50%, #2590EB 50%);
+  transition: all 1s;
+  color: #2590EB; /* White text */
+  padding: 12px 16px; /* Some padding */
+  font-size: 24px; /* Set a font size */
+  cursor: pointer; /* Mouse pointer on hover */
+  width: 80%;
+  margin-left: 10%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background-size: 100% 200%;
+  background-position: top;
+  transition: background-position all 1s;
+}
+
+/* Darker background on mouse-over */
+.sortbtn:hover {
+  background-position: bottom;
+  color: white;
+}

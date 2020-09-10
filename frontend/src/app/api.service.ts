@@ -130,6 +130,10 @@ export class ApiService {
     if (filters.timePeriod != null) {
       params = params.set('time_period', filters.timePeriod);
     }
+
+    if (filters.order != null) {
+      params = params.set('order_by', filters.order);
+    }
     return params;
   }
 }

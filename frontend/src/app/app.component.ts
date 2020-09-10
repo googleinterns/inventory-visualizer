@@ -60,6 +60,7 @@ export class AppComponent implements OnInit {
 
   files: string[];
   hasDisplayedData: boolean;
+  hasDisplayedErrorData: boolean;
 
   filtered: boolean;
   filters: {
@@ -68,6 +69,7 @@ export class AppComponent implements OnInit {
     fromDate: string;
     toDate: string;
     timePeriod: string;
+    order: string;
   };
   fromDate: string;
   toDate: string;
@@ -81,12 +83,14 @@ export class AppComponent implements OnInit {
   selectedDeviceId: string;
   selectedTimePeriodId: string;
   selectedCountryIds: string[];
+  order: string;
 
   constructor(private api: ApiService, private modalService: NgbModal) {
     this.segments = [];
     this.files = [];
     this.page = 0;
     this.hasDisplayedData = false;
+    this.hasDisplayedErrorData = false;
     this.filtered = false;
     this.filters = {
       device: null,
@@ -94,6 +98,7 @@ export class AppComponent implements OnInit {
       fromDate: null,
       toDate: null,
       timePeriod: null,
+      order: null,
     };
   }
 
@@ -119,22 +124,41 @@ export class AppComponent implements OnInit {
       .open(content, { ariaLabelledBy: 'modal-basic-title' })
       .result.then(
         (result) => {
-          this.filtered = true;
-          this.saveFilters();
-          this.page = 0;
-          this.clearChild(true);
-          this.sendFiltersToChild(this.filters);
-          if (this.files.length === 1) {
-            this.getData();
-          } else {
-            this.getErrorMetricsData();
-          }
+          this.processModalAction();
         },
         (reason) => {
           this.filtered = false;
           this.discardFilters();
         }
       );
+  }
+
+  openOrderingModal(orders): void {
+    this.modalService
+      .open(orders, { ariaLabelledBy: 'modal-basic-title' })
+      .result.then(
+        (result) => {
+          this.order = result;
+          this.processModalAction();
+        },
+        (reason) => {
+          this.filtered = false;
+          this.discardFilters();
+        }
+      );
+  }
+
+  processModalAction(): void {
+    this.filtered = true;
+    this.saveFilters();
+    this.page = 0;
+    this.clearChild(true);
+    this.sendFiltersToChild(this.filters);
+    if (this.files.length === 1) {
+      this.getData();
+    } else {
+      this.getErrorMetricsData();
+    }
   }
 
   scrollHandler(): void {
@@ -225,6 +249,7 @@ export class AppComponent implements OnInit {
       .getErrorMetricsData(this.files[0], this.files[1], this.filters)
       .subscribe((res) => {
         const compareResponse = SegmentedDataErrorResponse.fromJSON(res);
+        this.hasDisplayedErrorData = true;
         this.giveErrorDataToChild(compareResponse);
         this.getComparisonData();
       });
@@ -236,6 +261,7 @@ export class AppComponent implements OnInit {
     this.filters.toDate = this.toDate;
     this.filters.fromDate = this.fromDate;
     this.filters.timePeriod = this.selectedTimePeriodId;
+    this.filters.order = this.order;
   }
 
   discardFilters(): void {
@@ -244,5 +270,6 @@ export class AppComponent implements OnInit {
     this.fromDate = this.filters.fromDate;
     this.toDate = this.filters.toDate;
     this.selectedTimePeriodId = this.filters.timePeriod;
+    this.order = this.filters.order;
   }
 }

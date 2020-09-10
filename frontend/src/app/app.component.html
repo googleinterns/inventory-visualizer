@@ -73,6 +73,37 @@
 
 
 
+
+<ng-template #orders let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="order-modal">Sorting options</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div>
+
+    <button class="sortbtn" (click)="modal.close('alphabetical')"><i class="fa fa-sort-alpha-desc"></i>
+      Alphabetical</button>
+    <button class="sortbtn" (click)="modal.close  ('country_significance')"><i class="fa fa-sort-numeric-desc"></i>
+      Inventory volume</button>
+    <div *ngIf="hasDisplayedErrorData">
+      <button class="sortbtn" (click)="modal.close('error_significance')"><i class="fa fa-sort-amount-desc"></i> Error
+        significance</button>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('cancel')">Cancel</button>
+  </div>
+</ng-template>
+
+
+
+
+
 <div class="actions" *ngIf="hasDisplayedData">
   <div class="file-upload">
     <input type="file" accept=".csv" (change)="handleFileInput($event.target.files)" />
@@ -87,5 +118,10 @@
   <div class="filter">
     <button class="button" (click)="openFilterModal(content)"></button>
     <i class="fa fa-filter"></i>
+  </div>
+
+  <div class="order">
+    <button class="button" (click)="openOrderingModal(orders)"></button>
+    <i class="fa fa-sort-amount-desc"></i>
   </div>
 </div>
