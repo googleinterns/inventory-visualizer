@@ -16,7 +16,7 @@ def get_error_significance_score(value1, value2, distance_in_the_future, time_pe
     """
     period_with_error_significance = config.error_significance_by_time_period[time_period]
     if distance_in_the_future >= period_with_error_significance:
-        return 0
+        return -1
     weight = 1
     if distance_in_the_future != 1:
         weight = (period_with_error_significance - 1 - distance_in_the_future) / (

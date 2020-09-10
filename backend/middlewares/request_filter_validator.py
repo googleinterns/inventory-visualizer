@@ -30,6 +30,12 @@ def time_period_rule(value):
         return True, ''
     return False, 'value should be an allowed time period'
 
+
+def order_by_rule(value):
+    if value in config.allowed_order_types:
+        return True, ''
+    return False, 'value should be an allowed order type'
+
 rules = {
     'page': numeric_rule,
     'per_page': numeric_rule,
@@ -37,5 +43,6 @@ rules = {
     'countries': comma_separater_string_rule,
     'devices': string_rule,
     'start_date': numeric_rule,
-    'end_date': numeric_rule
+    'end_date': numeric_rule,
+    'order_by': order_by_rule
 }

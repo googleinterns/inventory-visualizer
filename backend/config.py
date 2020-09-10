@@ -18,3 +18,6 @@ error_significance_by_time_period = {
 error_significance_function = error_significance_classifier.get_error_significance_score
 secret_key_length = 15
 token_validity_period = 24*7*2 # 2 weeks
+error_order_by = 'error_significance'
+order_by = 'unordered'
+allowed_order_types = ['error_significance', 'alphabetical', 'country_significance']

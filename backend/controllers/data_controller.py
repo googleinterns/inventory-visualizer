@@ -9,7 +9,7 @@ from filters.data_filter import DataFilter
 from data_reader import get_data
 from filters.time_period_grouper import group_segment_data_by_time_period
 from authentication import auth
-
+from orders.segment_order import sort_data_by_order_type
 
 class Data(ProtectedResource):
 
@@ -25,8 +25,10 @@ class Data(ProtectedResource):
         time_period = request.args.get('time_period') if request.args.get('time_period') else config.time_period
         grouped_data = group_segment_data_by_time_period(data, time_period)
         filtered_data = data_filter.filter(grouped_data)
+        order_type = request.args.get('order_by') if request.args.get('order_by') else config.order_by
+        ordered_data = sort_data_by_order_type(list(filtered_data.values()), order_type)
         response = data_pb2.SegmentedTimelineDataResponse()
-        response.data.extend(list(filtered_data.values())[(page * per_page):(page * per_page + per_page)])
+        response.data.extend(ordered_data[(page * per_page):(page * per_page + per_page)])
         response.countries.extend(countries)
         response.devices.extend(devices)
         return MessageToDict(response)
