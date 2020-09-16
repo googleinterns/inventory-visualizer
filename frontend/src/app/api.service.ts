@@ -76,6 +76,20 @@ export class ApiService {
   }
 
   /**
+   * @description This method makes an http call and fetches the data for events from the specified file.
+   *
+   * @param string filename The name of the file containing the events data
+   * @param object filters Filters for the data. This is an object with fields: countries, device, fromDate, toDate, timePeriod
+   */
+  getEventsData(filename, filters): Observable<object> {
+    const params = this.buildFilter(filters, new HttpParams());
+    return this.http.get(
+      environment.apiRest + 'events/' + filename,
+      { params }
+    );
+  }
+
+  /**
    * @description This method makes an http post call to upload a file
    *
    * @param FileList files a list of files
@@ -89,11 +103,11 @@ export class ApiService {
   /**
    * @description This method makes an http delete call to delete a file
    *
-   * @param FileList files a list of files
+   * @param string file a filename
    */
-  deleteFile(files): void {
-    const params = new HttpParams().set('filename', files[0].name);
-    this.http.delete(environment.apiRest + 'file', { params });
+  deleteFile(filename): Observable<any> {
+    const params = new HttpParams().set('filename', filename);
+    return this.http.delete(environment.apiRest + 'file', { params });
   }
 
   /**
@@ -137,4 +151,3 @@ export class ApiService {
     return params;
   }
 }
-

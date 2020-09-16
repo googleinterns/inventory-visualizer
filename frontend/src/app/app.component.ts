@@ -1,10 +1,11 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from './api.service';
 import {
   SegmentedTimelineDataResponse,
   SegmentData,
   SegmentedTimelineCompareResponse,
-  SegmentedDataErrorResponse
+  SegmentedDataErrorResponse,
+  CountryEventsResponse
 } from './proto/protobuf/data';
 import { Subject } from 'rxjs';
 import {
@@ -57,8 +58,10 @@ export class AppComponent implements OnInit {
   errorData: Subject<any> = new Subject();
   clearCharts: Subject<any> = new Subject();
   updateFilters: Subject<any> = new Subject();
+  eventData: Subject<any> = new Subject();
 
   files: string[];
+  events: string;
   hasDisplayedData: boolean;
   hasDisplayedErrorData: boolean;
 
@@ -84,6 +87,7 @@ export class AppComponent implements OnInit {
   selectedTimePeriodId: string;
   selectedCountryIds: string[];
   order: string;
+  @ViewChild('fileInput') fileInput;
 
   constructor(private api: ApiService, private modalService: NgbModal) {
     this.segments = [];
@@ -148,6 +152,15 @@ export class AppComponent implements OnInit {
       );
   }
 
+  openMoreToolsModal(orders): void {
+    this.modalService
+      .open(orders, { ariaLabelledBy: 'modal-basic-title' })
+      .result.then(
+        (result) => {},
+        (reason) => {}
+      );
+  }
+
   processModalAction(): void {
     this.filtered = true;
     this.saveFilters();
@@ -170,9 +183,33 @@ export class AppComponent implements OnInit {
     }
   }
 
+  public refresh(): void {
+    this.deleteFiles();
+    this.discardFilters();
+    this.sendFiltersToChild(this.filters);
+    this.clearChild(true);
+    this.hasDisplayedData = false;
+    this.hasDisplayedErrorData = false;
+  }
+
+  public setToken(token): void {
+    localStorage.setItem('token', token);
+  }
+
+  public deleteFiles(): void {
+    for (const file of this.files) {
+      this.api.deleteFile(file).subscribe((response) => {
+        this.setToken(response.token);
+      });
+    }
+    this.files = [];
+  }
+
   public handleFileInput(files: FileList): void {
     this.files.push(files[0].name);
     this.uploadFile(files);
+
+    this.fileInput.nativeElement.value = '';
   }
 
   public handleComparisonInput(files: FileList): void {
@@ -180,15 +217,25 @@ export class AppComponent implements OnInit {
     this.page = 0;
     this.files.push(files[0].name);
     this.api.uploadFile(files).subscribe((response) => {
-      localStorage.setItem('token', response.token);
+      this.setToken(response.token);
       this.files[1] = response.filename;
       this.getErrorMetricsData();
     });
   }
 
+  public handleEventsInput(files: FileList): void {
+    this.clearChild(true);
+    this.page = 0;
+    this.api.uploadFile(files).subscribe((response) => {
+      this.setToken(response.token);
+      this.events = response.filename;
+      this.getEventsData();
+    });
+  }
+
   public uploadFile(file): void {
     this.api.uploadFile(file).subscribe((response) => {
-      localStorage.setItem('token', response.token);
+      this.setToken(response.token);
       this.files[0] = response.filename;
       this.getData();
     });
@@ -204,6 +251,10 @@ export class AppComponent implements OnInit {
 
   giveErrorDataToChild(changes): void {
     this.errorData.next(changes);
+  }
+
+  giveEventsToChild(changes): void {
+    this.eventData.next(changes);
   }
 
   clearChild(changes): void {
@@ -253,6 +304,18 @@ export class AppComponent implements OnInit {
         this.giveErrorDataToChild(compareResponse);
         this.getComparisonData();
       });
+  }
+
+  getEventsData(): void {
+    this.api.getEventsData(this.events, this.filters).subscribe((res) => {
+      const eventsResponse = CountryEventsResponse.fromJSON(res);
+      this.giveEventsToChild(eventsResponse);
+      if (this.files.length === 1) {
+        this.getData();
+      } else {
+        this.getErrorMetricsData();
+      }
+    });
   }
 
   saveFilters(): void {

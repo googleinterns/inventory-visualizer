@@ -16,6 +16,7 @@ message SegmentData {
     // volume in the inventory_volumes array
     repeated google.protobuf.Timestamp dates = 3;
     repeated int32 inventory_volumes = 4;
+    int32 segment_significance = 5;
 }
 
 message SegmentedTimelineDataResponse {
@@ -40,10 +41,26 @@ message SegmentedDataError {
     float first_quartile = 8;
     float third_quartile = 9;
     float weighted_error_average = 10;
+    float segment_significance = 11;
 }
 
 message SegmentedDataErrorResponse {
     repeated SegmentedDataError errors = 1;
+}
+
+message Event {
+    string name = 1;
+    google.protobuf.Timestamp start = 2;
+    google.protobuf.Timestamp end = 3;
+}
+
+message CountryEvents {
+    string country = 1;
+    repeated Event events = 2;
+}
+
+message CountryEventsResponse {
+    repeated CountryEvents country_events = 1;
 }
 
 service Data {

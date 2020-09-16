@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { SegmentedDataError } from '../proto/protobuf/data';
+import { SegmentedDataError, CountryEvents } from '../proto/protobuf/data';
 
 @Component({
   selector: 'app-google-charts',
@@ -20,9 +20,11 @@ export class GoogleChartsComponent implements AfterViewInit {
   @Input() error: Subject<any> = new Subject();
   @Input() clear: Subject<any> = new Subject();
   @Input() filters: Subject<any> = new Subject();
+  @Input() events: Subject<any> = new Subject();
   @Output() scrolled = new EventEmitter<number>();
   charts = [];
   segmentedErrors = [];
+  countryEvents = [];
   appliedFilters = null;
   constructor(private spinner: NgxSpinnerService) {}
 
@@ -36,8 +38,16 @@ export class GoogleChartsComponent implements AfterViewInit {
     this.addComparisonVisualizations();
     this.addErrorVisualization();
     this.filterErrorVisualization();
+    this.events.subscribe((v) => {
+      this.countryEvents = v.countryEvents;
+    });
     this.clear.subscribe((v) => {
+      this.segmentedErrors = [];
       this.charts = [];
+      let div = document.getElementById('chart_div');
+      while (div.firstChild) {
+        div.removeChild(div.firstChild);
+      }
     });
   }
 
@@ -45,6 +55,8 @@ export class GoogleChartsComponent implements AfterViewInit {
     this.changing.subscribe((v) => {
       for (const chart of v) {
         const newData = [];
+        const countryEvents = this.getEventsForCountry(chart.country);
+        let eventsIndex = this.getFirstEventIndex(chart, countryEvents);
         for (let i = 0; i < chart.dates.length; i++) {
           const values = [chart.inventoryVolumes[i]];
           const tooltip = this.buildTooltip(
@@ -52,11 +64,25 @@ export class GoogleChartsComponent implements AfterViewInit {
             values,
             ['file1']
           );
-          newData.push([chart.dates[i], tooltip, chart.inventoryVolumes[i]]);
+          const eventAnnotations = this.getEventAnnotation(
+            chart.dates[i],
+            countryEvents,
+            eventsIndex
+          );
+          eventsIndex = eventAnnotations[2];
+          newData.push([
+            chart.dates[i],
+            eventAnnotations[0],
+            eventAnnotations[1],
+            tooltip,
+            chart.inventoryVolumes[i],
+          ]);
         }
         this.addToCharts(
           [
             { type: 'date' },
+            { type: 'string', role: 'annotation' },
+            { type: 'string', role: 'annotationText' },
             { role: 'tooltip', type: 'string', p: { html: true } },
             'file1',
           ],
@@ -69,8 +95,67 @@ export class GoogleChartsComponent implements AfterViewInit {
     });
   }
 
+  getEventAnnotation(currentDate, countryEvents, eventIndex): any[] {
+    const result = [null, null, eventIndex];
+    if (
+      !countryEvents ||
+      !countryEvents.events ||
+      eventIndex >= countryEvents.events.length
+    ) {
+      return result;
+    }
+    const events = countryEvents.events;
+    const startIsInTimeframe = this.isInTimeframe(
+      currentDate,
+      events[eventIndex].start
+    );
+    const endIsInTimeframe = this.isInTimeframe(
+      currentDate,
+      events[eventIndex].end
+    );
+    if (startIsInTimeframe && endIsInTimeframe) {
+      result[0] = events[eventIndex].name;
+      result[1] = this.getTwoDateIntervalString(
+        events[eventIndex].start,
+        events[eventIndex].end
+      );
+      result[2] = eventIndex + 1;
+      return result;
+    }
+    if (startIsInTimeframe) {
+      result[0] = events[eventIndex].name + ' start';
+      result[1] = this.getDateString(events[eventIndex].start);
+      result[2] = eventIndex + 1;
+    }
+    if (endIsInTimeframe) {
+      result[0] = events[eventIndex].name + ' end';
+      result[1] = this.getDateString(events[eventIndex].end);
+      result[2] = eventIndex + 1;
+    }
+    return result;
+  }
+
+  isInTimeframe(timeframeStart, date): boolean {
+    if (!this.appliedFilters || !this.appliedFilters.timePeriod) {
+      const differenceInTime = date.getTime() - timeframeStart.getTime();
+      const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+      return differenceInDays <= 6;
+    }
+    if (this.appliedFilters.timePeriod === 'month') {
+      const month1 = timeframeStart.getMonth();
+      const month2 = date.getMonth();
+      return (
+        month1 === month2 && date.getFullYear() === timeframeStart.getFullYear()
+      );
+    }
+    return date.getTime() === timeframeStart.getTime();
+  }
+
   buildTooltip(date, values, labels): string {
-    let tooltip = '<div style="padding:5px 5px 5px 5px; display:table-row;"><b>' + date + '</b><table>';
+    let tooltip =
+      '<div style="padding:5px 5px 5px 5px; display:table-row;"><b>' +
+      date +
+      '</b><table>';
     for (let i = 0; i < values.length; i++) {
       if (values[i] != null) {
         tooltip +=
@@ -82,7 +167,6 @@ export class GoogleChartsComponent implements AfterViewInit {
   }
 
   buildDateForCharts(date): string {
-    const day = date.getDate();
     const month = date.toLocaleString('default', {
       month: 'short',
     });
@@ -90,29 +174,50 @@ export class GoogleChartsComponent implements AfterViewInit {
     if (!this.appliedFilters || !this.appliedFilters.timePeriod) {
       const nextDate = new Date(date);
       nextDate.setDate(date.getDate() + 7);
-      const day2 = nextDate.getDate();
-      const month2 = nextDate.toLocaleString('default', {
-        month: 'short',
-      });
-      const year2 = nextDate.getFullYear();
-      return (
-        day.toString() +
-        ' ' +
-        month +
-        ' ' +
-        year.toString() +
-        ' - ' +
-        day2.toString() +
-        ' ' +
-        month2 +
-        ' ' +
-        year2.toString()
-      );
+      return this.getTwoDateIntervalString(date, nextDate);
     }
     if (this.appliedFilters.timePeriod === 'month') {
       return month + ' ' + year.toString();
     }
+    return this.getDateString(date);
+  }
+
+  getDateString(date): string {
+    const day = date.getDate();
+    const month = date.toLocaleString('default', {
+      month: 'short',
+    });
+    const year = date.getFullYear();
     return day.toString() + ' ' + month + ' ' + year.toString();
+  }
+
+  getTwoDateIntervalString(date1, date2): string {
+    if (date1.getTime() === date2.getTime()) {
+      return this.getDateString(date1);
+    }
+    const day1 = date1.getDate();
+    const month1 = date1.toLocaleString('default', {
+      month: 'short',
+    });
+    const year1 = date1.getFullYear();
+    const day2 = date2.getDate();
+    const month2 = date2.toLocaleString('default', {
+      month: 'short',
+    });
+    const year2 = date2.getFullYear();
+    return (
+      day1.toString() +
+      ' ' +
+      month1 +
+      ' ' +
+      year1.toString() +
+      ' - ' +
+      day2.toString() +
+      ' ' +
+      month2 +
+      ' ' +
+      year2.toString()
+    );
   }
 
   addComparisonVisualizations(): void {
@@ -122,6 +227,8 @@ export class GoogleChartsComponent implements AfterViewInit {
       for (let j = 0; j < original.length; j++) {
         const dataTable = [];
         const segmentError = this.getErrorForSegment(original[j]);
+        const countryEvents = this.getEventsForCountry(original[j].country);
+        let eventsIndex = this.getFirstEventIndex(original[j], countryEvents);
         let originalIndex = 0;
         let comparisonIndex = 0;
         let errorIndex = this.getFirstErrorIndex(original[j], segmentError);
@@ -157,6 +264,13 @@ export class GoogleChartsComponent implements AfterViewInit {
               segmentError.error[errorIndex]
             );
           }
+          const eventAnnotations = this.getEventAnnotation(
+            currentDate,
+            countryEvents,
+            eventsIndex
+          );
+          eventsIndex = eventAnnotations[2];
+          column.push(eventAnnotations[0], eventAnnotations[1]);
           column.push(
             this.buildTooltip(this.buildDateForCharts(currentDate), values, [
               'file1',
@@ -167,11 +281,27 @@ export class GoogleChartsComponent implements AfterViewInit {
           column = column.concat(values);
           dataTable.push(column);
         }
-        this.addRemainingValues(dataTable, original[j], originalIndex, 0);
-        this.addRemainingValues(dataTable, comparison[j], comparisonIndex, 1);
+        this.addRemainingValues(
+          dataTable,
+          countryEvents,
+          eventsIndex,
+          original[j],
+          originalIndex,
+          0
+        );
+        this.addRemainingValues(
+          dataTable,
+          countryEvents,
+          eventsIndex,
+          comparison[j],
+          comparisonIndex,
+          1
+        );
         this.addToCharts(
           [
             { type: 'date' },
+            { type: 'string', role: 'annotation' },
+            { type: 'string', role: 'annotationText' },
             { role: 'tooltip', type: 'string', p: { html: true } },
             'file1',
             'file2',
@@ -197,6 +327,27 @@ export class GoogleChartsComponent implements AfterViewInit {
     return null;
   }
 
+  getEventsForCountry(country): CountryEvents {
+    for (const countryEvent of this.countryEvents) {
+      if (country === countryEvent.country) {
+        return countryEvent;
+      }
+    }
+    return null;
+  }
+
+  getFirstEventIndex(segment, events): number {
+    if (!events) {
+      return -1;
+    }
+    for (let i = 0; i < events.length; i++) {
+      if (events[i].start.getTime() >= segment.dates[0].getTime()) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
   getFirstErrorIndex(segment, error): number {
     for (let i = 0; i < error.dates.length; i++) {
       if (error.dates[i].getTime() >= segment.dates[0].getTime()) {
@@ -215,12 +366,27 @@ export class GoogleChartsComponent implements AfterViewInit {
     return 0;
   }
 
-  addRemainingValues(dataTable, segment, index, position): void {
+  addRemainingValues(
+    dataTable,
+    countryEvents,
+    eventsIndex,
+    segment,
+    index,
+    position
+  ): void {
     while (index < segment.dates.length) {
       const values = [null, null, null];
       values[position] = segment.inventoryVolumes[index];
+      const eventAnnotations = this.getEventAnnotation(
+        segment.dates[index],
+        countryEvents,
+        eventsIndex
+      );
+      eventsIndex = eventAnnotations[2];
       const column = [
         segment.dates[index],
+        eventAnnotations[0],
+        eventAnnotations[1],
         this.buildTooltip(
           this.buildDateForCharts(segment.dates[index]),
           values,
