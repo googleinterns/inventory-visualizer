@@ -115,7 +115,7 @@ def group_segment_data_by_time_period(data, time_period):
     for tuple, segment in data.items():
         dates, values = group_by_time_period(segment.dates, segment.inventory_volumes, time_period)
         new_segment = data_pb2.SegmentData(country=segment.country, device=segment.device, dates=dates,
-                                           inventory_volumes=values)
+                                           inventory_volumes=values, segment_significance=segment.segment_significance)
         new_data[tuple] = new_segment
     return new_data
 

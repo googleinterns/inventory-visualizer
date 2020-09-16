@@ -8,7 +8,7 @@ class DataFilter:
             'countries': self.filter_by_country,
             'devices': self.filter_by_device,
             'start_date': self.filter_by_start_date,
-            'end_date': self.filter_by_end_date
+            'end_date': self.filter_by_end_date,
         }
         self.filters = self.get_only_supported_filters(requested_filters)
 
@@ -62,6 +62,6 @@ class DataFilter:
             dates = [segment.dates[key] for key in keys]
             inventory_volumes = [segment.inventory_volumes[key] for key in keys]
             filtered_segment = data_pb2.SegmentData(country=segment.country, device=segment.device, dates=dates,
-                                                    inventory_volumes=inventory_volumes)
+                                                    inventory_volumes=inventory_volumes, segment_significance=segment.segment_significance)
             new_data[index] = filtered_segment
         return new_data
