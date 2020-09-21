@@ -44,7 +44,6 @@ export class GoogleChartsComponent implements AfterViewInit {
     this.clear.subscribe((v) => {
       this.segmentedErrors = [];
       this.charts = [];
-      //this.countryEvents = [];
       let div = document.getElementById('chart_div');
       while (div.firstChild) {
         div.removeChild(div.firstChild);
@@ -333,7 +332,6 @@ export class GoogleChartsComponent implements AfterViewInit {
       return -1;
     }
     for (let i = 0; i < countryEvents.events.length; i++) {
-      console.log(countryEvents.events[i].start);
       if (
         countryEvents.events[i].start.getTime() >= segment.dates[0].getTime()
       ) {
@@ -448,7 +446,7 @@ export class GoogleChartsComponent implements AfterViewInit {
           0: { title: 'Inventory' },
           1: { title: 'Error %' },
         },
-        hAxis: { format: 'MMM yyyy' },
+        hAxis: { format: 'MMM yyyy', gridlines: { color: '#fff' } },
         width: window.innerWidth,
         height: window.innerHeight * 0.25,
         focusTarget: 'category',

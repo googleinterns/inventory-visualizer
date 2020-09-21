@@ -5,7 +5,7 @@ import {
   SegmentData,
   SegmentedTimelineCompareResponse,
   SegmentedDataErrorResponse,
-  CountryEventsResponse
+  CountryEventsResponse,
 } from './proto/protobuf/data';
 import { Subject } from 'rxjs';
 import {
@@ -188,6 +188,7 @@ export class AppComponent implements OnInit {
     this.discardFilters();
     this.sendFiltersToChild(this.filters);
     this.clearChild(true);
+    this.giveEventsToChild({ countryEvents: [] });
     this.hasDisplayedData = false;
     this.hasDisplayedErrorData = false;
   }
