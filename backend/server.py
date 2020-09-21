@@ -1,4 +1,4 @@
-from controllers import file_controller, data_controller, error_controller
+from controllers import file_controller, data_controller, error_controller, event_controller
 import config
 from flask import Flask, request
 from flask_restful import Api
@@ -18,8 +18,11 @@ def middleware():
 
 api.add_resource(data_controller.Data, '/data/<filename>')
 api.add_resource(error_controller.Error, '/error/<filename1>/<filename2>')
-api.add_resource(file_controller.File, '/file', )
 api.add_resource(error_controller.Comparator, '/compare/<original_filename>/<filename_for_comparison>')
+api.add_resource(event_controller.Events, '/events/<filename>')
+
+api.add_resource(file_controller.File, '/file', )
+
 api.add_resource(auth.Register, '/register')
 
 if __name__ == '__main__':

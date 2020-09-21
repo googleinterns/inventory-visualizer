@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\ndata.proto\x12\x06\x64\x61tapb\x1a\x1fgoogle/protobuf/timestamp.proto\"0\n\x1cSegmentedTimelineDataRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"\x92\x01\n\x0bSegmentData\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x19\n\x11inventory_volumes\x18\x04 \x03(\x05\x12\x1c\n\x14segment_significance\x18\x05 \x01(\x05\"f\n\x1dSegmentedTimelineDataResponse\x12!\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x13.datapb.SegmentData\x12\x11\n\tcountries\x18\x02 \x03(\t\x12\x0f\n\x07\x64\x65vices\x18\x03 \x03(\t\"\xa0\x01\n SegmentedTimelineCompareResponse\x12<\n\roriginal_data\x18\x01 \x01(\x0b\x32%.datapb.SegmentedTimelineDataResponse\x12>\n\x0f\x63omparison_data\x18\x02 \x01(\x0b\x32%.datapb.SegmentedTimelineDataResponse\"\x87\x02\n\x12SegmentedDataError\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\r\n\x05\x65rror\x18\x04 \x03(\x02\x12\x0b\n\x03min\x18\x05 \x01(\x02\x12\x0b\n\x03max\x18\x06 \x01(\x02\x12\x0e\n\x06median\x18\x07 \x01(\x02\x12\x16\n\x0e\x66irst_quartile\x18\x08 \x01(\x02\x12\x16\n\x0ethird_quartile\x18\t \x01(\x02\x12\x1e\n\x16weighted_error_average\x18\n \x01(\x02\x12\x1c\n\x14segment_significance\x18\x0b \x01(\x02\"H\n\x1aSegmentedDataErrorResponse\x12*\n\x06\x65rrors\x18\x01 \x03(\x0b\x32\x1a.datapb.SegmentedDataError2o\n\x04\x44\x61ta\x12g\n\x18getSegmentedTimelineData\x12$.datapb.SegmentedTimelineDataRequest\x1a%.datapb.SegmentedTimelineDataResponseb\x06proto3'
+  serialized_pb=b'\n\ndata.proto\x12\x06\x64\x61tapb\x1a\x1fgoogle/protobuf/timestamp.proto\"0\n\x1cSegmentedTimelineDataRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"\x92\x01\n\x0bSegmentData\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x19\n\x11inventory_volumes\x18\x04 \x03(\x05\x12\x1c\n\x14segment_significance\x18\x05 \x01(\x05\"f\n\x1dSegmentedTimelineDataResponse\x12!\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x13.datapb.SegmentData\x12\x11\n\tcountries\x18\x02 \x03(\t\x12\x0f\n\x07\x64\x65vices\x18\x03 \x03(\t\"\xa0\x01\n SegmentedTimelineCompareResponse\x12<\n\roriginal_data\x18\x01 \x01(\x0b\x32%.datapb.SegmentedTimelineDataResponse\x12>\n\x0f\x63omparison_data\x18\x02 \x01(\x0b\x32%.datapb.SegmentedTimelineDataResponse\"\x87\x02\n\x12SegmentedDataError\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x0e\n\x06\x64\x65vice\x18\x02 \x01(\t\x12)\n\x05\x64\x61tes\x18\x03 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\r\n\x05\x65rror\x18\x04 \x03(\x02\x12\x0b\n\x03min\x18\x05 \x01(\x02\x12\x0b\n\x03max\x18\x06 \x01(\x02\x12\x0e\n\x06median\x18\x07 \x01(\x02\x12\x16\n\x0e\x66irst_quartile\x18\x08 \x01(\x02\x12\x16\n\x0ethird_quartile\x18\t \x01(\x02\x12\x1e\n\x16weighted_error_average\x18\n \x01(\x02\x12\x1c\n\x14segment_significance\x18\x0b \x01(\x02\"H\n\x1aSegmentedDataErrorResponse\x12*\n\x06\x65rrors\x18\x01 \x03(\x0b\x32\x1a.datapb.SegmentedDataError\"i\n\x05\x45vent\x12\x0c\n\x04name\x18\x01 \x01(\t\x12)\n\x05start\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\'\n\x03\x65nd\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"?\n\rCountryEvents\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x1d\n\x06\x65vents\x18\x02 \x03(\x0b\x32\r.datapb.Event\"F\n\x15\x43ountryEventsResponse\x12-\n\x0e\x63ountry_events\x18\x01 \x03(\x0b\x32\x15.datapb.CountryEvents\"_\n\x14\x45rrorPatternResponse\x12)\n\x05\x64\x61tes\x18\x01 \x03(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x1c\n\x14odds_for_large_error\x18\x02 \x03(\x02\x32o\n\x04\x44\x61ta\x12g\n\x18getSegmentedTimelineData\x12$.datapb.SegmentedTimelineDataRequest\x1a%.datapb.SegmentedTimelineDataResponseb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
 
@@ -337,18 +337,183 @@ _SEGMENTEDDATAERRORRESPONSE = _descriptor.Descriptor(
   serialized_end=859,
 )
 
+
+_EVENT = _descriptor.Descriptor(
+  name='Event',
+  full_name='datapb.Event',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='datapb.Event.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='start', full_name='datapb.Event.start', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='end', full_name='datapb.Event.end', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=861,
+  serialized_end=966,
+)
+
+
+_COUNTRYEVENTS = _descriptor.Descriptor(
+  name='CountryEvents',
+  full_name='datapb.CountryEvents',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='country', full_name='datapb.CountryEvents.country', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='events', full_name='datapb.CountryEvents.events', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=968,
+  serialized_end=1031,
+)
+
+
+_COUNTRYEVENTSRESPONSE = _descriptor.Descriptor(
+  name='CountryEventsResponse',
+  full_name='datapb.CountryEventsResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='country_events', full_name='datapb.CountryEventsResponse.country_events', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1033,
+  serialized_end=1103,
+)
+
+
+_ERRORPATTERNRESPONSE = _descriptor.Descriptor(
+  name='ErrorPatternResponse',
+  full_name='datapb.ErrorPatternResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='dates', full_name='datapb.ErrorPatternResponse.dates', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='odds_for_large_error', full_name='datapb.ErrorPatternResponse.odds_for_large_error', index=1,
+      number=2, type=2, cpp_type=6, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1105,
+  serialized_end=1200,
+)
+
 _SEGMENTDATA.fields_by_name['dates'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _SEGMENTEDTIMELINEDATARESPONSE.fields_by_name['data'].message_type = _SEGMENTDATA
 _SEGMENTEDTIMELINECOMPARERESPONSE.fields_by_name['original_data'].message_type = _SEGMENTEDTIMELINEDATARESPONSE
 _SEGMENTEDTIMELINECOMPARERESPONSE.fields_by_name['comparison_data'].message_type = _SEGMENTEDTIMELINEDATARESPONSE
 _SEGMENTEDDATAERROR.fields_by_name['dates'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _SEGMENTEDDATAERRORRESPONSE.fields_by_name['errors'].message_type = _SEGMENTEDDATAERROR
+_EVENT.fields_by_name['start'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_EVENT.fields_by_name['end'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_COUNTRYEVENTS.fields_by_name['events'].message_type = _EVENT
+_COUNTRYEVENTSRESPONSE.fields_by_name['country_events'].message_type = _COUNTRYEVENTS
+_ERRORPATTERNRESPONSE.fields_by_name['dates'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 DESCRIPTOR.message_types_by_name['SegmentedTimelineDataRequest'] = _SEGMENTEDTIMELINEDATAREQUEST
 DESCRIPTOR.message_types_by_name['SegmentData'] = _SEGMENTDATA
 DESCRIPTOR.message_types_by_name['SegmentedTimelineDataResponse'] = _SEGMENTEDTIMELINEDATARESPONSE
 DESCRIPTOR.message_types_by_name['SegmentedTimelineCompareResponse'] = _SEGMENTEDTIMELINECOMPARERESPONSE
 DESCRIPTOR.message_types_by_name['SegmentedDataError'] = _SEGMENTEDDATAERROR
 DESCRIPTOR.message_types_by_name['SegmentedDataErrorResponse'] = _SEGMENTEDDATAERRORRESPONSE
+DESCRIPTOR.message_types_by_name['Event'] = _EVENT
+DESCRIPTOR.message_types_by_name['CountryEvents'] = _COUNTRYEVENTS
+DESCRIPTOR.message_types_by_name['CountryEventsResponse'] = _COUNTRYEVENTSRESPONSE
+DESCRIPTOR.message_types_by_name['ErrorPatternResponse'] = _ERRORPATTERNRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 SegmentedTimelineDataRequest = _reflection.GeneratedProtocolMessageType('SegmentedTimelineDataRequest', (_message.Message,), {
@@ -393,6 +558,34 @@ SegmentedDataErrorResponse = _reflection.GeneratedProtocolMessageType('Segmented
   })
 _sym_db.RegisterMessage(SegmentedDataErrorResponse)
 
+Event = _reflection.GeneratedProtocolMessageType('Event', (_message.Message,), {
+  'DESCRIPTOR' : _EVENT,
+  '__module__' : 'data_pb2'
+  # @@protoc_insertion_point(class_scope:datapb.Event)
+  })
+_sym_db.RegisterMessage(Event)
+
+CountryEvents = _reflection.GeneratedProtocolMessageType('CountryEvents', (_message.Message,), {
+  'DESCRIPTOR' : _COUNTRYEVENTS,
+  '__module__' : 'data_pb2'
+  # @@protoc_insertion_point(class_scope:datapb.CountryEvents)
+  })
+_sym_db.RegisterMessage(CountryEvents)
+
+CountryEventsResponse = _reflection.GeneratedProtocolMessageType('CountryEventsResponse', (_message.Message,), {
+  'DESCRIPTOR' : _COUNTRYEVENTSRESPONSE,
+  '__module__' : 'data_pb2'
+  # @@protoc_insertion_point(class_scope:datapb.CountryEventsResponse)
+  })
+_sym_db.RegisterMessage(CountryEventsResponse)
+
+ErrorPatternResponse = _reflection.GeneratedProtocolMessageType('ErrorPatternResponse', (_message.Message,), {
+  'DESCRIPTOR' : _ERRORPATTERNRESPONSE,
+  '__module__' : 'data_pb2'
+  # @@protoc_insertion_point(class_scope:datapb.ErrorPatternResponse)
+  })
+_sym_db.RegisterMessage(ErrorPatternResponse)
+
 
 
 _DATA = _descriptor.ServiceDescriptor(
@@ -402,8 +595,8 @@ _DATA = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=861,
-  serialized_end=972,
+  serialized_start=1202,
+  serialized_end=1313,
   methods=[
   _descriptor.MethodDescriptor(
     name='getSegmentedTimelineData',
