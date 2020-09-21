@@ -44,6 +44,7 @@ export class GoogleChartsComponent implements AfterViewInit {
     this.clear.subscribe((v) => {
       this.segmentedErrors = [];
       this.charts = [];
+      //this.countryEvents = [];
       let div = document.getElementById('chart_div');
       while (div.firstChild) {
         div.removeChild(div.firstChild);
@@ -105,33 +106,24 @@ export class GoogleChartsComponent implements AfterViewInit {
       return result;
     }
     const events = countryEvents.events;
-    const startIsInTimeframe = this.isInTimeframe(
-      currentDate,
-      events[eventIndex].start
-    );
-    const endIsInTimeframe = this.isInTimeframe(
-      currentDate,
-      events[eventIndex].end
-    );
-    if (startIsInTimeframe && endIsInTimeframe) {
-      result[0] = events[eventIndex].name;
-      result[1] = this.getTwoDateIntervalString(
-        events[eventIndex].start,
-        events[eventIndex].end
-      );
-      result[2] = eventIndex + 1;
-      return result;
+    while (this.isInTimeframe(currentDate, events[eventIndex].start)) {
+      if (!result[0]) {
+        result[0] = '';
+      }
+      if (!result[1]) {
+        result[1] = '';
+      }
+      result[0] += events[eventIndex].name + ' ';
+      result[1] +=
+        events[eventIndex].name +
+        ' : ' +
+        this.getTwoDateIntervalString(
+          events[eventIndex].start,
+          events[eventIndex].end
+        );
+      eventIndex++;
     }
-    if (startIsInTimeframe) {
-      result[0] = events[eventIndex].name + ' start';
-      result[1] = this.getDateString(events[eventIndex].start);
-      result[2] = eventIndex + 1;
-    }
-    if (endIsInTimeframe) {
-      result[0] = events[eventIndex].name + ' end';
-      result[1] = this.getDateString(events[eventIndex].end);
-      result[2] = eventIndex + 1;
-    }
+    result[2] = eventIndex;
     return result;
   }
 
@@ -336,12 +328,15 @@ export class GoogleChartsComponent implements AfterViewInit {
     return null;
   }
 
-  getFirstEventIndex(segment, events): number {
-    if (!events) {
+  getFirstEventIndex(segment, countryEvents): number {
+    if (!countryEvents) {
       return -1;
     }
-    for (let i = 0; i < events.length; i++) {
-      if (events[i].start.getTime() >= segment.dates[0].getTime()) {
+    for (let i = 0; i < countryEvents.events.length; i++) {
+      console.log(countryEvents.events[i].start);
+      if (
+        countryEvents.events[i].start.getTime() >= segment.dates[0].getTime()
+      ) {
         return i;
       }
     }
@@ -458,6 +453,9 @@ export class GoogleChartsComponent implements AfterViewInit {
         height: window.innerHeight * 0.25,
         focusTarget: 'category',
         tooltip: { isHtml: true },
+        annotations: {
+          style: 'line',
+        },
       },
     };
     this.charts.push(current);
