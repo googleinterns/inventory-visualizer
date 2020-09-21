@@ -10,7 +10,7 @@ from filters.data_filter import DataFilter
 from data_reader import get_data
 from numpy import percentile, asarray
 from filters.time_period_grouper import group_segment_data_by_time_period
-
+from orders.segment_order import sort_data_by_order_type
 error_importance_by_files = {}
 
 
@@ -28,7 +28,8 @@ def get_error(segment1, segment2, time_period):
     :param segment2: data_pb2.SegmentedData This is the second segment
     :return: data_pb2.SegmentedDataError This is the object containing all error information
     """
-    error = data_pb2.SegmentedDataError(country=segment1.country, device=segment1.device)
+    segment_significance = (segment1.segment_significance + segment2.segment_significance)/2
+    error = data_pb2.SegmentedDataError(country=segment1.country, device=segment1.device, segment_significance=segment_significance)
     index1, index2 = get_index_with_first_difference(segment1, segment2)
     weighted_errors = []
     while index1 != -1:
@@ -38,7 +39,9 @@ def get_error(segment1, segment2, time_period):
             current_error = (value2 - value1) / value1
             error.error.append(current_error)
             error.dates.append(segment1.dates[index1])
-            weighted_errors.append(config.error_significance_function(value1, value2, len(error.error), time_period))
+            weighted_error = config.error_significance_function(value1, value2, len(error.error), time_period)
+            if weighted_error != -1:
+                weighted_errors.append(weighted_error)
         index1 = index1 + 1
         index2 = index2 + 1
         index1, index2 = get_first_same_date_indexes_in_sublists(segment1.dates, segment2.dates, index1, index2)
@@ -104,11 +107,11 @@ class Error(ProtectedResource):
         time_period = request.args.get('time_period') if request.args.get('time_period') else config.time_period
         data1 = group_segment_data_by_time_period(data1, time_period)
         data2 = group_segment_data_by_time_period(data2, time_period)
-        errors = sorted([get_error(data1[tuple], data2[tuple], time_period) for tuple in data1.keys()],
-                        key=lambda x: x.weighted_error_average,
-                        reverse=True)
-        error_importance_by_files[(filename1, filename2)] = [(error.country, error.device) for error in errors]
-        response = data_pb2.SegmentedDataErrorResponse(errors=errors)
+        errors = [get_error(data1[tuple], data2[tuple], time_period) for tuple in data1.keys()]
+        order_type = request.args.get('order_by') if request.args.get('order_by') else config.error_order_by
+        sorted_errors = sort_data_by_order_type(errors, order_type)
+        error_importance_by_files[(filename1, filename2)] = [(error.country, error.device) for error in sorted_errors]
+        response = data_pb2.SegmentedDataErrorResponse(errors=sorted_errors)
         return MessageToDict(response)
 
 
@@ -141,7 +144,9 @@ class Comparator(ProtectedResource):
                              original_data.keys()],
                             key=lambda x: x.median,
                             reverse=True)
-            error_importance_by_files[(filename1, filename2)] = [(error.country, error.device) for error in errors]
+            order_type = request.args.get('order_by') if request.args.get('order_by') else config.error_order_by
+            sorted_errors = sort_data_by_order_type(errors, order_type)
+            error_importance_by_files[(filename1, filename2)] = [(error.country, error.device) for error in sorted_errors]
 
         error_importance = error_importance_by_files[(filename1, filename2)]
         sorted_segment_keys_by_importance = [segment_key for segment_key in error_importance if
