@@ -103,7 +103,7 @@ export class ApiService {
   /**
    * @description This method makes an http delete call to delete a file
    *
-   * @param string file a filename
+   * @param string filename a filename
    */
   deleteFile(filename): Observable<any> {
     const params = new HttpParams().set('filename', filename);
