@@ -3,10 +3,10 @@ import { SegmentedDataError, CountryEvents } from '../proto/protobuf/data';
 export class ChartsUtil {
   /**
    *
-   * This method generates an Event annotaion for a given time period. The time period is defined by a start date
+   * This method generates an Event annotation for a given time period. The time period is defined by a start date
    * and the type of the selected time period (day, week, month). The returned array consists of the name the annotation,
    * the annotation text and the reached postion in the events for the current country. The annotation name is what will be
-   * displayed in the graph, whereas the annotation text is the on-hover tooltip for the annotation. The tooltio should
+   * displayed in the graph, whereas the annotation text is the on-hover tooltip for the annotation. The tooltip should
    * contain the names for each of the events for the current time period along with when it takes place.
    * The result returns nulls for annotation name and annotation text if no event takes place in the current time period.
    *
@@ -64,7 +64,7 @@ export class ChartsUtil {
    * @param Date date The date to be checked for, if it fits in the timeframe
    * @param object appliedFilters This object keeps information about the selected time period
    *
-   * @return boolean Retursn true if date is within the timeframe and false otherwise.
+   * @returns boolean Returns true if date is within the timeframe and false otherwise.
    */
   static isInTimeframe(timeframeStart, date, appliedFilters): boolean {
     if (!appliedFilters || !appliedFilters.timePeriod) {
@@ -135,7 +135,7 @@ export class ChartsUtil {
 
   /**
    *
-   * This method takes a date as a parameter and returns its dd MMM yyyy string representation.
+   * This method takes a date as a parameter and returns its dd Mon yyyy string representation.
    *
    * @param Date date Date to be formatted
    *
@@ -153,9 +153,9 @@ export class ChartsUtil {
   /**
    *
    * This method takes tow dates that define a time period and returns a string that represents it
-   * in the format dd MMM yyyy - dd MMM yyyy
+   * in the format dd Mon yyyy - dd Mon yyyy
    *
-   * @param Date date1 Start of tiem period
+   * @param Date date1 Start of time period
    * @param Date date2 End of time period
    *
    * @returns string The string representation of the time period
@@ -191,11 +191,11 @@ export class ChartsUtil {
 
   /**
    *
-   * This method reveices an error for a segment and based on the selected filters
-   * returns whether it should be dispalyed or not.
+   * This method receives an error for a segment and based on the selected filters
+   * returns whether it should be displayed or not.
    *
    * @param SegmentedDataError error Object that contains country and device
-   * @param object appliedFilters Object that contains countries and devices that should be dispalyed
+   * @param object appliedFilters Object that contains countries and devices that should be displayed
    */
   static shouldBeDisplayed(error, appliedFilters): boolean {
     if (appliedFilters === null) {
@@ -220,7 +220,7 @@ export class ChartsUtil {
 
   /**
    *
-   * This metohd gets the current segement and a list of segmetnedErrors and returns
+   * This method gets the current segement and a list of segmetnedErrors and returns
    * the segmentedError that matches the segment.
    *
    * @param object segment The current segment
@@ -242,7 +242,7 @@ export class ChartsUtil {
 
   /**
    *
-   * This metohd gets the current country and a list of CountryEvents and returns
+   * This method gets the current country and a list of CountryEvents and returns
    * the countryEvent that matches the country.
    *
    * @param string country The current country
