@@ -3,7 +3,7 @@ from grpc.messages import data_pb2
 from authentication.auth import ProtectedResource
 import os
 from werkzeug.utils import secure_filename
-from data_reader import get_events
+from utils.data_reader import get_events
 import config
 from orders import event_order
 
