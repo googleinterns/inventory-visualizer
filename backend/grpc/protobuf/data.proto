@@ -16,7 +16,7 @@ message SegmentData {
     // volume in the inventory_volumes array
     repeated google.protobuf.Timestamp dates = 3;
     repeated int32 inventory_volumes = 4;
-    // Segment significance shows how important a segment is based on its 
+    // Segment significance shows how important a segment is based on its
     // inventory volume. Its value is equal to the maximum inventory volume.
     int32 segment_significance = 5;
 }
@@ -48,6 +48,26 @@ message SegmentedDataError {
 
 message SegmentedDataErrorResponse {
     repeated SegmentedDataError errors = 1;
+}
+
+message Event {
+    string name = 1;
+    google.protobuf.Timestamp start = 2;
+    google.protobuf.Timestamp end = 3;
+}
+
+message CountryEvents {
+    string country = 1;
+    repeated Event events = 2;
+}
+
+message CountryEventsResponse {
+    repeated CountryEvents country_events = 1;
+}
+
+message ErrorPatternResponse {
+    repeated google.protobuf.Timestamp dates = 1;
+    repeated float odds_for_large_error = 2;
 }
 
 service Data {
