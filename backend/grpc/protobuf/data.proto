@@ -16,6 +16,8 @@ message SegmentData {
     // volume in the inventory_volumes array
     repeated google.protobuf.Timestamp dates = 3;
     repeated int32 inventory_volumes = 4;
+    // Segment significance shows how important a segment is based on its
+    // inventory volume. Its value is equal to the maximum inventory volume.
     int32 segment_significance = 5;
 }
 
