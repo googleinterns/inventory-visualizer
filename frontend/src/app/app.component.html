@@ -1,12 +1,12 @@
-<div class="wrapper" *ngIf="!hasDisplayedData">
+<div class="wrapper" [hidden]="hasDisplayedData">
   <div class="file-upload">
-    <input type="file" accept=".csv" (change)="handleFileInput($event.target.files)" />
+    <input #fileInput type="file" accept=".csv" (change)="handleFileInput($event.target.files)" />
     <i class="fa fa-line-chart"></i>
   </div>
 </div>
 
 <app-google-charts (scrolled)="scrollHandler()" [changing]="updateCharts" [compare]="compareData" [clear]="clearCharts"
-  [error]="errorData" [filters]="updateFilters">
+  [error]="errorData" [filters]="updateFilters" [events]="eventData">
 </app-google-charts>
 
 <ng-template #content let-modal>
@@ -100,15 +100,31 @@
   </div>
 </ng-template>
 
+<ng-template #more let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="more-modal">More tools</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
 
+  <div>
+    <button class="sortbtn" (click)="modal.close('refresh'); refresh()"><i class="fa fa-refresh"></i>
+      Start over</button>
+    <div class='annot-upload'>
+      <input type="file" accept=".csv" (change)="modal.close('events'); handleEventsInput($event.target.files)" />
+      <i class="fa fa-calendar"> Add event annotations</i>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('cancel')">Cancel</button>
+  </div>
+</ng-template>
 
 
 
 <div class="actions" *ngIf="hasDisplayedData">
-  <div class="file-upload">
-    <input type="file" accept=".csv" (change)="handleFileInput($event.target.files)" />
-    <i class="fa fa-line-chart"></i>
-  </div>
 
   <div class="compare">
     <input type="file" accept=".csv" (change)="handleComparisonInput($event.target.files)" />
@@ -123,5 +139,10 @@
   <div class="order">
     <button class="button" (click)="openOrderingModal(orders)"></button>
     <i class="fa fa-sort-amount-desc"></i>
+  </div>
+
+  <div class="more-tools">
+    <button class="button" (click)="openMoreToolsModal(more)"></button>
+    <i class="fa fa-ellipsis-v"></i>
   </div>
 </div>

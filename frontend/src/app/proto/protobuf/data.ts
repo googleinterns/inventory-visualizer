@@ -19,6 +19,7 @@ export interface SegmentData {
    */
   dates: Date[];
   inventoryVolumes: number[];
+  segmentSignificance: number;
 }
 
 export interface SegmentedTimelineDataResponse {
@@ -42,10 +43,27 @@ export interface SegmentedDataError {
   median: number;
   firstQuartile: number;
   thirdQuartile: number;
+  weightedErrorAverage: number;
+  segmentSignificance: number;
 }
 
 export interface SegmentedDataErrorResponse {
   errors: SegmentedDataError[];
+}
+
+export interface Event {
+  name: string;
+  start: Date | undefined;
+  end: Date | undefined;
+}
+
+export interface CountryEvents {
+  country: string;
+  events: Event[];
+}
+
+export interface CountryEventsResponse {
+  countryEvents: CountryEvents[];
 }
 
 const baseSegmentedTimelineDataRequest: object = {
@@ -56,6 +74,7 @@ const baseSegmentData: object = {
   country: "",
   device: "",
   inventoryVolumes: 0,
+  segmentSignificance: 0,
 };
 
 const baseSegmentedTimelineDataResponse: object = {
@@ -75,9 +94,22 @@ const baseSegmentedDataError: object = {
   median: 0,
   firstQuartile: 0,
   thirdQuartile: 0,
+  weightedErrorAverage: 0,
+  segmentSignificance: 0,
 };
 
 const baseSegmentedDataErrorResponse: object = {
+};
+
+const baseEvent: object = {
+  name: "",
+};
+
+const baseCountryEvents: object = {
+  country: "",
+};
+
+const baseCountryEventsResponse: object = {
 };
 
 export interface Data {
@@ -189,6 +221,7 @@ export const SegmentData = {
       writer.int32(v);
     }
     writer.ldelim();
+    writer.uint32(40).int32(message.segmentSignificance);
     return writer;
   },
   decode(input: Uint8Array | Reader, length?: number): SegmentData {
@@ -218,6 +251,9 @@ export const SegmentData = {
           } else {
             message.inventoryVolumes.push(reader.int32());
           }
+          break;
+        case 5:
+          message.segmentSignificance = reader.int32();
           break;
         default:
           reader.skipType(tag & 7);
@@ -250,6 +286,11 @@ export const SegmentData = {
         message.inventoryVolumes.push(Number(e));
       }
     }
+    if (object.segmentSignificance !== undefined && object.segmentSignificance !== null) {
+      message.segmentSignificance = Number(object.segmentSignificance);
+    } else {
+      message.segmentSignificance = 0;
+    }
     return message;
   },
   fromPartial(object: DeepPartial<SegmentData>): SegmentData {
@@ -276,6 +317,11 @@ export const SegmentData = {
         message.inventoryVolumes.push(e);
       }
     }
+    if (object.segmentSignificance !== undefined && object.segmentSignificance !== null) {
+      message.segmentSignificance = object.segmentSignificance;
+    } else {
+      message.segmentSignificance = 0;
+    }
     return message;
   },
   toJSON(message: SegmentData): unknown {
@@ -292,6 +338,7 @@ export const SegmentData = {
     } else {
       obj.inventoryVolumes = [];
     }
+    obj.segmentSignificance = message.segmentSignificance || 0;
     return obj;
   },
 };
@@ -483,6 +530,8 @@ export const SegmentedDataError = {
     writer.uint32(61).float(message.median);
     writer.uint32(69).float(message.firstQuartile);
     writer.uint32(77).float(message.thirdQuartile);
+    writer.uint32(85).float(message.weightedErrorAverage);
+    writer.uint32(93).float(message.segmentSignificance);
     return writer;
   },
   decode(input: Uint8Array | Reader, length?: number): SegmentedDataError {
@@ -527,6 +576,12 @@ export const SegmentedDataError = {
           break;
         case 9:
           message.thirdQuartile = reader.float();
+          break;
+        case 10:
+          message.weightedErrorAverage = reader.float();
+          break;
+        case 11:
+          message.segmentSignificance = reader.float();
           break;
         default:
           reader.skipType(tag & 7);
@@ -584,6 +639,16 @@ export const SegmentedDataError = {
     } else {
       message.thirdQuartile = 0;
     }
+    if (object.weightedErrorAverage !== undefined && object.weightedErrorAverage !== null) {
+      message.weightedErrorAverage = Number(object.weightedErrorAverage);
+    } else {
+      message.weightedErrorAverage = 0;
+    }
+    if (object.segmentSignificance !== undefined && object.segmentSignificance !== null) {
+      message.segmentSignificance = Number(object.segmentSignificance);
+    } else {
+      message.segmentSignificance = 0;
+    }
     return message;
   },
   fromPartial(object: DeepPartial<SegmentedDataError>): SegmentedDataError {
@@ -635,6 +700,16 @@ export const SegmentedDataError = {
     } else {
       message.thirdQuartile = 0;
     }
+    if (object.weightedErrorAverage !== undefined && object.weightedErrorAverage !== null) {
+      message.weightedErrorAverage = object.weightedErrorAverage;
+    } else {
+      message.weightedErrorAverage = 0;
+    }
+    if (object.segmentSignificance !== undefined && object.segmentSignificance !== null) {
+      message.segmentSignificance = object.segmentSignificance;
+    } else {
+      message.segmentSignificance = 0;
+    }
     return message;
   },
   toJSON(message: SegmentedDataError): unknown {
@@ -656,6 +731,8 @@ export const SegmentedDataError = {
     obj.median = message.median || 0;
     obj.firstQuartile = message.firstQuartile || 0;
     obj.thirdQuartile = message.thirdQuartile || 0;
+    obj.weightedErrorAverage = message.weightedErrorAverage || 0;
+    obj.segmentSignificance = message.segmentSignificance || 0;
     return obj;
   },
 };
@@ -711,6 +788,214 @@ export const SegmentedDataErrorResponse = {
       obj.errors = message.errors.map(e => e ? SegmentedDataError.toJSON(e) : undefined);
     } else {
       obj.errors = [];
+    }
+    return obj;
+  },
+};
+
+export const Event = {
+  encode(message: Event, writer: Writer = Writer.create()): Writer {
+    writer.uint32(10).string(message.name);
+    if (message.start !== undefined && message.start !== undefined) {
+      Timestamp.encode(toTimestamp(message.start), writer.uint32(18).fork()).ldelim();
+    }
+    if (message.end !== undefined && message.end !== undefined) {
+      Timestamp.encode(toTimestamp(message.end), writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): Event {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseEvent } as Event;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.name = reader.string();
+          break;
+        case 2:
+          message.start = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          break;
+        case 3:
+          message.end = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): Event {
+    const message = { ...baseEvent } as Event;
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name);
+    } else {
+      message.name = "";
+    }
+    if (object.start !== undefined && object.start !== null) {
+      message.start = fromJsonTimestamp(object.start);
+    } else {
+      message.start = undefined;
+    }
+    if (object.end !== undefined && object.end !== null) {
+      message.end = fromJsonTimestamp(object.end);
+    } else {
+      message.end = undefined;
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<Event>): Event {
+    const message = { ...baseEvent } as Event;
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    } else {
+      message.name = "";
+    }
+    if (object.start !== undefined && object.start !== null) {
+      message.start = object.start;
+    } else {
+      message.start = undefined;
+    }
+    if (object.end !== undefined && object.end !== null) {
+      message.end = object.end;
+    } else {
+      message.end = undefined;
+    }
+    return message;
+  },
+  toJSON(message: Event): unknown {
+    const obj: any = {};
+    obj.name = message.name || "";
+    obj.start = message.start !== undefined ? message.start.toISOString() : null;
+    obj.end = message.end !== undefined ? message.end.toISOString() : null;
+    return obj;
+  },
+};
+
+export const CountryEvents = {
+  encode(message: CountryEvents, writer: Writer = Writer.create()): Writer {
+    writer.uint32(10).string(message.country);
+    for (const v of message.events) {
+      Event.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): CountryEvents {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseCountryEvents } as CountryEvents;
+    message.events = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.country = reader.string();
+          break;
+        case 2:
+          message.events.push(Event.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): CountryEvents {
+    const message = { ...baseCountryEvents } as CountryEvents;
+    message.events = [];
+    if (object.country !== undefined && object.country !== null) {
+      message.country = String(object.country);
+    } else {
+      message.country = "";
+    }
+    if (object.events !== undefined && object.events !== null) {
+      for (const e of object.events) {
+        message.events.push(Event.fromJSON(e));
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<CountryEvents>): CountryEvents {
+    const message = { ...baseCountryEvents } as CountryEvents;
+    message.events = [];
+    if (object.country !== undefined && object.country !== null) {
+      message.country = object.country;
+    } else {
+      message.country = "";
+    }
+    if (object.events !== undefined && object.events !== null) {
+      for (const e of object.events) {
+        message.events.push(Event.fromPartial(e));
+      }
+    }
+    return message;
+  },
+  toJSON(message: CountryEvents): unknown {
+    const obj: any = {};
+    obj.country = message.country || "";
+    if (message.events) {
+      obj.events = message.events.map(e => e ? Event.toJSON(e) : undefined);
+    } else {
+      obj.events = [];
+    }
+    return obj;
+  },
+};
+
+export const CountryEventsResponse = {
+  encode(message: CountryEventsResponse, writer: Writer = Writer.create()): Writer {
+    for (const v of message.countryEvents) {
+      CountryEvents.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): CountryEventsResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseCountryEventsResponse } as CountryEventsResponse;
+    message.countryEvents = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.countryEvents.push(CountryEvents.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): CountryEventsResponse {
+    const message = { ...baseCountryEventsResponse } as CountryEventsResponse;
+    message.countryEvents = [];
+    if (object.countryEvents !== undefined && object.countryEvents !== null) {
+      for (const e of object.countryEvents) {
+        message.countryEvents.push(CountryEvents.fromJSON(e));
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<CountryEventsResponse>): CountryEventsResponse {
+    const message = { ...baseCountryEventsResponse } as CountryEventsResponse;
+    message.countryEvents = [];
+    if (object.countryEvents !== undefined && object.countryEvents !== null) {
+      for (const e of object.countryEvents) {
+        message.countryEvents.push(CountryEvents.fromPartial(e));
+      }
+    }
+    return message;
+  },
+  toJSON(message: CountryEventsResponse): unknown {
+    const obj: any = {};
+    if (message.countryEvents) {
+      obj.countryEvents = message.countryEvents.map(e => e ? CountryEvents.toJSON(e) : undefined);
+    } else {
+      obj.countryEvents = [];
     }
     return obj;
   },

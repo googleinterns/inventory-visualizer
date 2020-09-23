@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { SegmentedDataError } from '../proto/protobuf/data';
+import { ChartsUtil } from './charts-util';
 
 @Component({
   selector: 'app-google-charts',
@@ -20,9 +20,11 @@ export class GoogleChartsComponent implements AfterViewInit {
   @Input() error: Subject<any> = new Subject();
   @Input() clear: Subject<any> = new Subject();
   @Input() filters: Subject<any> = new Subject();
+  @Input() events: Subject<any> = new Subject();
   @Output() scrolled = new EventEmitter<number>();
   charts = [];
   segmentedErrors = [];
+  countryEvents = [];
   appliedFilters = null;
   constructor(private spinner: NgxSpinnerService) {}
 
@@ -36,8 +38,16 @@ export class GoogleChartsComponent implements AfterViewInit {
     this.addComparisonVisualizations();
     this.addErrorVisualization();
     this.filterErrorVisualization();
+    this.events.subscribe((v) => {
+      this.countryEvents = v.countryEvents;
+    });
     this.clear.subscribe((v) => {
+      this.segmentedErrors = [];
       this.charts = [];
+      let div = document.getElementById('chart_div');
+      while (div.firstChild) {
+        div.removeChild(div.firstChild);
+      }
     });
   }
 
@@ -45,18 +55,38 @@ export class GoogleChartsComponent implements AfterViewInit {
     this.changing.subscribe((v) => {
       for (const chart of v) {
         const newData = [];
+        const countryEvents = ChartsUtil.getEventsForCountry(
+          chart.country,
+          this.countryEvents
+        );
+        let eventsIndex = ChartsUtil.getFirstEventIndex(chart, countryEvents);
         for (let i = 0; i < chart.dates.length; i++) {
           const values = [chart.inventoryVolumes[i]];
-          const tooltip = this.buildTooltip(
-            this.buildDateForCharts(chart.dates[i]),
+          const tooltip = ChartsUtil.buildTooltip(
+            ChartsUtil.buildDateForCharts(chart.dates[i], this.appliedFilters),
             values,
             ['file1']
           );
-          newData.push([chart.dates[i], tooltip, chart.inventoryVolumes[i]]);
+          const eventAnnotations = ChartsUtil.getEventAnnotation(
+            chart.dates[i],
+            countryEvents,
+            eventsIndex,
+            this.appliedFilters
+          );
+          eventsIndex = eventAnnotations[2];
+          newData.push([
+            chart.dates[i],
+            eventAnnotations[0],
+            eventAnnotations[1],
+            tooltip,
+            chart.inventoryVolumes[i],
+          ]);
         }
         this.addToCharts(
           [
             { type: 'date' },
+            { type: 'string', role: 'annotation' },
+            { type: 'string', role: 'annotationText' },
             { role: 'tooltip', type: 'string', p: { html: true } },
             'file1',
           ],
@@ -69,62 +99,30 @@ export class GoogleChartsComponent implements AfterViewInit {
     });
   }
 
-  buildTooltip(date, values, labels): string {
-    let tooltip = '<div style="padding:5px 5px 5px 5px; display:table-row;"><b>' + date + '</b><table>';
-    for (let i = 0; i < values.length; i++) {
-      if (values[i] != null) {
-        tooltip +=
-          '<tr><td>' + labels[i] + ' : <b>' + values[i] + '</b></td></tr>';
-      }
-    }
-    tooltip += '</table></div>';
-    return tooltip;
-  }
-
-  buildDateForCharts(date): string {
-    const day = date.getDate();
-    const month = date.toLocaleString('default', {
-      month: 'short',
-    });
-    const year = date.getFullYear();
-    if (!this.appliedFilters || !this.appliedFilters.timePeriod) {
-      const nextDate = new Date(date);
-      nextDate.setDate(date.getDate() + 7);
-      const day2 = nextDate.getDate();
-      const month2 = nextDate.toLocaleString('default', {
-        month: 'short',
-      });
-      const year2 = nextDate.getFullYear();
-      return (
-        day.toString() +
-        ' ' +
-        month +
-        ' ' +
-        year.toString() +
-        ' - ' +
-        day2.toString() +
-        ' ' +
-        month2 +
-        ' ' +
-        year2.toString()
-      );
-    }
-    if (this.appliedFilters.timePeriod === 'month') {
-      return month + ' ' + year.toString();
-    }
-    return day.toString() + ' ' + month + ' ' + year.toString();
-  }
-
   addComparisonVisualizations(): void {
     this.compare.subscribe((v) => {
       const original = v.originalData.data;
       const comparison = v.comparisonData.data;
       for (let j = 0; j < original.length; j++) {
         const dataTable = [];
-        const segmentError = this.getErrorForSegment(original[j]);
+        const segmentError = ChartsUtil.getErrorForSegment(
+          original[j],
+          this.segmentedErrors
+        );
+        const countryEvents = ChartsUtil.getEventsForCountry(
+          original[j].country,
+          this.countryEvents
+        );
+        let eventsIndex = ChartsUtil.getFirstEventIndex(
+          original[j],
+          countryEvents
+        );
         let originalIndex = 0;
         let comparisonIndex = 0;
-        let errorIndex = this.getFirstErrorIndex(original[j], segmentError);
+        let errorIndex = ChartsUtil.getFirstErrorIndex(
+          original[j],
+          segmentError
+        );
         while (
           originalIndex < original[j].dates.length &&
           comparisonIndex < comparison[j].dates.length
@@ -157,21 +155,45 @@ export class GoogleChartsComponent implements AfterViewInit {
               segmentError.error[errorIndex]
             );
           }
+          const eventAnnotations = ChartsUtil.getEventAnnotation(
+            currentDate,
+            countryEvents,
+            eventsIndex,
+            this.appliedFilters
+          );
+          eventsIndex = eventAnnotations[2];
+          column.push(eventAnnotations[0], eventAnnotations[1]);
           column.push(
-            this.buildTooltip(this.buildDateForCharts(currentDate), values, [
-              'file1',
-              'file2',
-              'error',
-            ])
+            ChartsUtil.buildTooltip(
+              ChartsUtil.buildDateForCharts(currentDate, this.appliedFilters),
+              values,
+              ['file1', 'file2', 'error']
+            )
           );
           column = column.concat(values);
           dataTable.push(column);
         }
-        this.addRemainingValues(dataTable, original[j], originalIndex, 0);
-        this.addRemainingValues(dataTable, comparison[j], comparisonIndex, 1);
+        this.addRemainingValues(
+          dataTable,
+          countryEvents,
+          eventsIndex,
+          original[j],
+          originalIndex,
+          0
+        );
+        this.addRemainingValues(
+          dataTable,
+          countryEvents,
+          eventsIndex,
+          comparison[j],
+          comparisonIndex,
+          1
+        );
         this.addToCharts(
           [
             { type: 'date' },
+            { type: 'string', role: 'annotation' },
+            { type: 'string', role: 'annotationText' },
             { role: 'tooltip', type: 'string', p: { html: true } },
             'file1',
             'file2',
@@ -185,27 +207,6 @@ export class GoogleChartsComponent implements AfterViewInit {
     });
   }
 
-  getErrorForSegment(segment): SegmentedDataError {
-    for (const error of this.segmentedErrors) {
-      if (
-        segment.country === error.country &&
-        segment.device === error.device
-      ) {
-        return error;
-      }
-    }
-    return null;
-  }
-
-  getFirstErrorIndex(segment, error): number {
-    for (let i = 0; i < error.dates.length; i++) {
-      if (error.dates[i].getTime() >= segment.dates[0].getTime()) {
-        return i;
-      }
-    }
-    return 0;
-  }
-
   addValueForCurrentDate(currentDate, data, segmentDate, value): number {
     if (currentDate.getTime() === segmentDate.getTime()) {
       data.push(value);
@@ -215,14 +216,33 @@ export class GoogleChartsComponent implements AfterViewInit {
     return 0;
   }
 
-  addRemainingValues(dataTable, segment, index, position): void {
+  addRemainingValues(
+    dataTable,
+    countryEvents,
+    eventsIndex,
+    segment,
+    index,
+    position
+  ): void {
     while (index < segment.dates.length) {
       const values = [null, null, null];
       values[position] = segment.inventoryVolumes[index];
+      const eventAnnotations = ChartsUtil.getEventAnnotation(
+        segment.dates[index],
+        countryEvents,
+        eventsIndex,
+        this.appliedFilters
+      );
+      eventsIndex = eventAnnotations[2];
       const column = [
         segment.dates[index],
-        this.buildTooltip(
-          this.buildDateForCharts(segment.dates[index]),
+        eventAnnotations[0],
+        eventAnnotations[1],
+        ChartsUtil.buildTooltip(
+          ChartsUtil.buildDateForCharts(
+            segment.dates[index],
+            this.appliedFilters
+          ),
           values,
           ['file1', 'file2', 'error']
         ),
@@ -237,27 +257,6 @@ export class GoogleChartsComponent implements AfterViewInit {
       this.segmentedErrors = v.errors;
       this.plotErrors(v.errors);
     });
-  }
-
-  shouldBeDisplayed(error): boolean {
-    if (this.appliedFilters === null) {
-      return true;
-    }
-    if (
-      this.appliedFilters.countries &&
-      this.appliedFilters.countries !== [] &&
-      this.appliedFilters.countries.length !== 0 &&
-      !this.appliedFilters.countries.includes(error.country)
-    ) {
-      return false;
-    }
-    if (
-      this.appliedFilters.device != null &&
-      this.appliedFilters.device !== error.device
-    ) {
-      return false;
-    }
-    return true;
   }
 
   filterErrorVisualization(): void {
@@ -287,11 +286,14 @@ export class GoogleChartsComponent implements AfterViewInit {
           0: { title: 'Inventory' },
           1: { title: 'Error %' },
         },
-        hAxis: { format: 'MMM yyyy' },
+        hAxis: { format: 'MMM yyyy', gridlines: { color: '#fff' } },
         width: window.innerWidth,
         height: window.innerHeight * 0.25,
         focusTarget: 'category',
         tooltip: { isHtml: true },
+        annotations: {
+          style: 'line',
+        },
       },
     };
     this.charts.push(current);
@@ -300,7 +302,7 @@ export class GoogleChartsComponent implements AfterViewInit {
   plotErrors(errors): void {
     const data = [];
     for (const error of errors) {
-      if (this.shouldBeDisplayed(error)) {
+      if (ChartsUtil.shouldBeDisplayed(error, this.appliedFilters)) {
         data.push([
           error.country + error.device,
           error.max,
