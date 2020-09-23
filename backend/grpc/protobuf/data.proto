@@ -50,6 +50,26 @@ message SegmentedDataErrorResponse {
     repeated SegmentedDataError errors = 1;
 }
 
+message Event {
+    string name = 1;
+    google.protobuf.Timestamp start = 2;
+    google.protobuf.Timestamp end = 3;
+}
+
+message CountryEvents {
+    string country = 1;
+    repeated Event events = 2;
+}
+
+message CountryEventsResponse {
+    repeated CountryEvents country_events = 1;
+}
+
+message ErrorPatternResponse {
+    repeated google.protobuf.Timestamp dates = 1;
+    repeated float odds_for_large_error = 2;
+}
+
 service Data {
    rpc getSegmentedTimelineData (SegmentedTimelineDataRequest) returns (SegmentedTimelineDataResponse);
 }
