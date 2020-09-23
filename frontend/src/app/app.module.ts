@@ -14,6 +14,8 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { AuthInterceptor } from './auth.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { Ng5SliderModule } from 'ng5-slider';
+
 
 @NgModule({
   declarations: [
@@ -29,7 +31,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     NgxSpinnerModule,
     NgbModule,
     FormsModule,
-    NgSelectModule
+    NgSelectModule,
+    Ng5SliderModule
   ],
   providers: [ApiService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: [AppComponent]

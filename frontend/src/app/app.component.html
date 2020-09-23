@@ -1,3 +1,19 @@
+<script>
+const
+    range = document.getElementById('range'),
+    rangeV = document.getElementById('rangeV'),
+    setValue = ()=>{
+        const
+            newValue = Number( (range.value - range.min) * 100 / (range.max - range.min) ),
+            newPosition = 10 - (newValue * 0.2);
+        rangeV.innerHTML = `<span>${range.value}</span>`;
+        rangeV.style.left = `calc(${newValue}% + (${newPosition}px))`;
+    };
+document.addEventListener("DOMContentLoaded", setValue);
+range.addEventListener('input', setValue);
+
+</script>
+
 <div class="wrapper" [hidden]="hasDisplayedData">
   <div class="file-upload">
     <input #fileInput type="file" accept=".csv" (change)="handleFileInput($event.target.files)" />
@@ -100,6 +116,21 @@
   </div>
 </ng-template>
 
+<ng-template #patterns let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="more-modal">Error patterns</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <ng5-slider [(value)]="thresholdValue" [options]="thresholdOptions"></ng5-slider>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('cancel')">Cancel</button>
+  </div>
+</ng-template>
+
 <ng-template #more let-modal>
   <div class="modal-header">
     <h4 class="modal-title" id="more-modal">More tools</h4>
@@ -115,6 +146,9 @@
       <input type="file" accept=".csv" (change)="modal.close('events'); handleEventsInput($event.target.files)" />
       <i class="fa fa-calendar"> Add event annotations</i>
     </div>
+    <button class="sortbtn" (click)="modal.close('patterns'); openOrderingModal(patterns)"><i
+        class="fa fa-puzzle-piece"></i>
+      Find error patterns</button>
   </div>
 
   <div class="modal-footer">

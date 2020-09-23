@@ -13,6 +13,7 @@ import {
   NgbDateStruct,
   NgbDateAdapter,
 } from '@ng-bootstrap/ng-bootstrap';
+import { Options } from 'ng5-slider';
 
 /**
  * This Service handles how the date is represented in scripts i.e. ngModel.
@@ -73,6 +74,12 @@ export class AppComponent implements OnInit {
     toDate: string;
     timePeriod: string;
     order: string;
+  };
+  thresholdValue: number = 10;
+  thresholdOptions: Options = {
+    floor: 0,
+    ceil: 100,
+    step: 0.1
   };
   fromDate: string;
   toDate: string;
