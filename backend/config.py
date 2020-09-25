@@ -21,3 +21,4 @@ token_validity_period = 24 * 7 * 2  # 2 weeks
 error_order_by = 'error_significance'
 order_by = 'unordered'
 allowed_order_types = ['error_significance', 'alphabetical', 'country_significance']
+error_threshold=10
