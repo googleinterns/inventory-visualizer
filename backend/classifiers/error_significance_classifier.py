@@ -14,12 +14,16 @@ def get_error_significance_score(value1, value2, distance_in_the_future, time_pe
     :param time_period: string What that distance is measured in (day, week, month)
     :return: int Weighted error
     """
+    error = ((value2 - value1) / value1) * 100
+    return get_error_significance_score_util(error, distance_in_the_future, time_period)
+
+
+def get_error_significance_score_util(error, distance_in_the_future, time_period):
     period_with_error_significance = config.error_significance_by_time_period[time_period]
-    if distance_in_the_future >= period_with_error_significance:
+    if distance_in_the_future >= period_with_error_significance or distance_in_the_future <= 0:
         return -1
     weight = 1
     if distance_in_the_future != 1:
         weight = (period_with_error_significance - 1 - distance_in_the_future) / (
                 period_with_error_significance - distance_in_the_future)
-    error = abs(value2 - value1) / value1
-    return weight * error
+    return weight * abs(error)

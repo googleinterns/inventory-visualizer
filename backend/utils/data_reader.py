@@ -1,19 +1,10 @@
 import csv
-from google.protobuf.timestamp_pb2 import Timestamp
-from datetime import datetime
 from grpc.messages import data_pb2
-
+from utils.date_util import string_to_timestamp_format
 saved_data = {}
 
-
-def to_timestamp_format(date):
-    timestamp = Timestamp()
-    timestamp.FromDatetime(datetime.strptime(date, '%Y-%m-%d'))
-    return timestamp
-
-
 def add_data(segment, date, inventory):
-    timestamp = to_timestamp_format(date)
+    timestamp = string_to_timestamp_format(date)
     segment.dates.append(timestamp)
     segment.inventory_volumes.append(int(inventory))
     segment.segment_significance = max(segment.segment_significance, int(inventory))
@@ -46,8 +37,8 @@ def get_events(filename):
     with open(filename) as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
-            start = to_timestamp_format(row['start'])
-            end = to_timestamp_format(row['end'])
+            start = string_to_timestamp_format(row['start'])
+            end = string_to_timestamp_format(row['end'])
             event = data_pb2.Event(name=row['name'], start=start, end=end)
             if (row['country']) not in events_by_countries:
                 events_by_countries[row['country']] = data_pb2.CountryEvents(country=row['country'])

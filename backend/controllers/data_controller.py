@@ -6,10 +6,11 @@ from flask import request, abort
 import os
 from werkzeug.utils import secure_filename
 from filters.data_filter import DataFilter
-from data_reader import get_data
+from utils.data_reader import get_data
 from filters.time_period_grouper import group_segment_data_by_time_period
 from authentication import auth
 from orders.segment_order import sort_data_by_order_type
+
 
 class Data(ProtectedResource):
 
