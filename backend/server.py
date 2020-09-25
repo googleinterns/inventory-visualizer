@@ -20,6 +20,7 @@ api.add_resource(data_controller.Data, '/data/<filename>')
 api.add_resource(error_controller.Error, '/error/<filename1>/<filename2>')
 api.add_resource(error_controller.Comparator, '/compare/<original_filename>/<filename_for_comparison>')
 api.add_resource(event_controller.Events, '/events/<filename>')
+api.add_resource(error_controller.ErrorPattern, '/error_patterns/<filename1>/<filename2>')
 
 api.add_resource(file_controller.File, '/file', )
 

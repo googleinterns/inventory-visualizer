@@ -10,6 +10,7 @@ from utils.data_reader import get_data
 from filters.time_period_grouper import group_segment_data_by_time_period
 from orders.segment_order import sort_data_by_order_type
 from utils.error_util import get_error_by_files
+from classifiers import error_patter_classifier
 
 error_importance_by_files = {}
 
@@ -72,3 +73,14 @@ class Comparator(ProtectedResource):
         response = data_pb2.SegmentedTimelineCompareResponse(original_data=original_segmented_timeline_data,
                                                              comparison_data=comparison_segmented_timeline_data)
         return MessageToDict(response)
+
+
+class ErrorPattern(ProtectedResource):
+
+    def get(self, filename1, filename2):
+        time_period = request.args.get('time_period') if request.args.get('time_period') else config.time_period
+        error_threshold = float(request.args.get('error_threshold')) if request.args.get(
+            'error_threshold') else config.error_threshold
+        errors = get_error_by_files(filename1, filename2, time_period)
+        error_patterns = error_patter_classifier.get_error_patterns(errors, error_threshold)
+        return MessageToDict(error_patterns)
