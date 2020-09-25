@@ -19,6 +19,10 @@ export interface SegmentData {
    */
   dates: Date[];
   inventoryVolumes: number[];
+  /**
+   *  Segment significance shows how important a segment is based on its
+   *  inventory volume. Its value is equal to the maximum inventory volume.
+   */
   segmentSignificance: number;
 }
 
@@ -66,6 +70,11 @@ export interface CountryEventsResponse {
   countryEvents: CountryEvents[];
 }
 
+export interface ErrorPatternResponse {
+  dates: Date[];
+  oddsForLargeError: number[];
+}
+
 const baseSegmentedTimelineDataRequest: object = {
   filename: "",
 };
@@ -110,6 +119,10 @@ const baseCountryEvents: object = {
 };
 
 const baseCountryEventsResponse: object = {
+};
+
+const baseErrorPatternResponse: object = {
+  oddsForLargeError: 0,
 };
 
 export interface Data {
@@ -996,6 +1009,95 @@ export const CountryEventsResponse = {
       obj.countryEvents = message.countryEvents.map(e => e ? CountryEvents.toJSON(e) : undefined);
     } else {
       obj.countryEvents = [];
+    }
+    return obj;
+  },
+};
+
+export const ErrorPatternResponse = {
+  encode(message: ErrorPatternResponse, writer: Writer = Writer.create()): Writer {
+    for (const v of message.dates) {
+      Timestamp.encode(toTimestamp(v!), writer.uint32(10).fork()).ldelim();
+    }
+    writer.uint32(18).fork();
+    for (const v of message.oddsForLargeError) {
+      writer.float(v);
+    }
+    writer.ldelim();
+    return writer;
+  },
+  decode(input: Uint8Array | Reader, length?: number): ErrorPatternResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseErrorPatternResponse } as ErrorPatternResponse;
+    message.dates = [];
+    message.oddsForLargeError = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.dates.push(fromTimestamp(Timestamp.decode(reader, reader.uint32())));
+          break;
+        case 2:
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.oddsForLargeError.push(reader.float());
+            }
+          } else {
+            message.oddsForLargeError.push(reader.float());
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): ErrorPatternResponse {
+    const message = { ...baseErrorPatternResponse } as ErrorPatternResponse;
+    message.dates = [];
+    message.oddsForLargeError = [];
+    if (object.dates !== undefined && object.dates !== null) {
+      for (const e of object.dates) {
+        message.dates.push(fromJsonTimestamp(e));
+      }
+    }
+    if (object.oddsForLargeError !== undefined && object.oddsForLargeError !== null) {
+      for (const e of object.oddsForLargeError) {
+        message.oddsForLargeError.push(Number(e));
+      }
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<ErrorPatternResponse>): ErrorPatternResponse {
+    const message = { ...baseErrorPatternResponse } as ErrorPatternResponse;
+    message.dates = [];
+    message.oddsForLargeError = [];
+    if (object.dates !== undefined && object.dates !== null) {
+      for (const e of object.dates) {
+        message.dates.push(e);
+      }
+    }
+    if (object.oddsForLargeError !== undefined && object.oddsForLargeError !== null) {
+      for (const e of object.oddsForLargeError) {
+        message.oddsForLargeError.push(e);
+      }
+    }
+    return message;
+  },
+  toJSON(message: ErrorPatternResponse): unknown {
+    const obj: any = {};
+    if (message.dates) {
+      obj.dates = message.dates.map(e => e !== undefined ? e.toISOString() : null);
+    } else {
+      obj.dates = [];
+    }
+    if (message.oddsForLargeError) {
+      obj.oddsForLargeError = message.oddsForLargeError.map(e => e || 0);
+    } else {
+      obj.oddsForLargeError = [];
     }
     return obj;
   },
