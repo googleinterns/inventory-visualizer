@@ -1,10 +1,14 @@
 import unittest
 import config
 from classifiers.error_significance_classifier import get_error_significance_score
-from random import randint
+from random import randint, seed
 
 
 class TestErrorSignificance(unittest.TestCase):
+
+    def setUp(self):
+        seed(100)
+
     def test_get_error_significance_score_after_date_significance_limit(self):
         for time_period in config.allowed_time_periods:
             period_with_error_significance = config.error_significance_by_time_period[time_period]
