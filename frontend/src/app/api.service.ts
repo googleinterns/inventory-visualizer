@@ -89,11 +89,11 @@ export class ApiService {
   }
 
   /**
-   * @description This method makes an http call and fetches data that contais information about
+   * @description This method makes an http call and fetches data that contains information about
    * the odds of an error larger than a given threshold for every date that the two files have in common.
    *
    * @param string filename1 The name of the first file to take the data from
-   * @param string filename2 The name of the second file with the comaprison data
+   * @param string filename2 The name of the second file with the comparison data
    * @param object filters Filters for the data. This object contains data about error threshold and time period
    */
   getErrorPatterns(filename1, filename2, filters): Observable<object> {

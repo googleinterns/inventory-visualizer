@@ -83,6 +83,7 @@ export class AppComponent implements OnInit {
     ceil: 100,
     step: 0.1,
   };
+  thresholdSet: boolean = false;
   fromDate: string;
   toDate: string;
   countries = [];
@@ -173,6 +174,7 @@ export class AppComponent implements OnInit {
       .open(orders, { ariaLabelledBy: 'modal-basic-title' })
       .result.then(
         (result) => {
+          this.thresholdSet = true;
           this.saveFilters();
           this.getErrorPatterns();
         },
@@ -205,7 +207,7 @@ export class AppComponent implements OnInit {
 
   public refresh(): void {
     this.deleteFiles();
-    this.discardFilters();
+    this.resetFilters();
     this.filters.threshold = null;
     this.thresholdValue = 10;
     this.sendToChild(this.updateFilters, this.filters);
@@ -341,7 +343,9 @@ export class AppComponent implements OnInit {
     this.filters.fromDate = this.fromDate;
     this.filters.timePeriod = this.selectedTimePeriodId;
     this.filters.order = this.order;
-    this.filters.threshold = this.thresholdValue;
+    if (this.thresholdSet) {
+      this.filters.threshold = this.thresholdValue;
+    }
   }
 
   discardFilters(): void {
@@ -351,6 +355,22 @@ export class AppComponent implements OnInit {
     this.toDate = this.filters.toDate;
     this.selectedTimePeriodId = this.filters.timePeriod;
     this.order = this.filters.order;
-    this.thresholdValue = this.filters.threshold;
+    if (this.thresholdSet) {
+      this.thresholdValue = this.filters.threshold;
+    }
+    this.thresholdSet = false;
+  }
+
+  resetFilters(): void {
+    this.filters = {
+      device: null,
+      countries: [],
+      fromDate: null,
+      toDate: null,
+      timePeriod: null,
+      order: null,
+      threshold: null,
+    };
+    this.thresholdSet = false;
   }
 }

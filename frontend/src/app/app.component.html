@@ -1,16 +1,16 @@
 <script>
-const
+  const
     range = document.getElementById('range'),
     rangeV = document.getElementById('rangeV'),
-    setValue = ()=>{
-        const
-            newValue = Number( (range.value - range.min) * 100 / (range.max - range.min) ),
-            newPosition = 10 - (newValue * 0.2);
-        rangeV.innerHTML = `<span>${range.value}</span>`;
-        rangeV.style.left = `calc(${newValue}% + (${newPosition}px))`;
+    setValue = () => {
+      const
+        newValue = Number((range.value - range.min) * 100 / (range.max - range.min)),
+        newPosition = 10 - (newValue * 0.2);
+      rangeV.innerHTML = `<span>${range.value}</span>`;
+      rangeV.style.left = `calc(${newValue}% + (${newPosition}px))`;
     };
-document.addEventListener("DOMContentLoaded", setValue);
-range.addEventListener('input', setValue);
+  document.addEventListener("DOMContentLoaded", setValue);
+  range.addEventListener('input', setValue);
 
 </script>
 
@@ -147,9 +147,9 @@ range.addEventListener('input', setValue);
       <i class="fa fa-calendar"> Add event annotations</i>
     </div>
     <div *ngIf="hasDisplayedErrorData">
-    <button class="sortbtn" (click)="modal.close('patterns'); openErrorPatternModal(patterns)"><i
-        class="fa fa-puzzle-piece"></i>
-      Find error patterns</button>
+      <button class="sortbtn" (click)="modal.close('patterns'); openErrorPatternModal(patterns)"><i
+          class="fa fa-puzzle-piece"></i>
+        Find error patterns</button>
     </div>
   </div>
 
@@ -162,7 +162,7 @@ range.addEventListener('input', setValue);
 
 <div class="actions" *ngIf="hasDisplayedData">
 
-  <div class="compare">
+  <div class="compare" *ngIf="!hasDisplayedErrorData">
     <input type="file" accept=".csv" (change)="handleComparisonInput($event.target.files)" />
     <i class="fa fa-balance-scale"></i>
   </div>
