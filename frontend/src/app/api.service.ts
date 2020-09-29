@@ -83,8 +83,23 @@ export class ApiService {
    */
   getEventsData(filename, filters): Observable<object> {
     const params = this.buildFilter(filters, new HttpParams());
+    return this.http.get(environment.apiRest + 'events/' + filename, {
+      params,
+    });
+  }
+
+  /**
+   * @description This method makes an http call and fetches data that contains information about
+   * the odds of an error larger than a given threshold for every date that the two files have in common.
+   *
+   * @param string filename1 The name of the first file to take the data from
+   * @param string filename2 The name of the second file with the comparison data
+   * @param object filters Filters for the data. This object contains data about error threshold and time period
+   */
+  getErrorPatterns(filename1, filename2, filters): Observable<object> {
+    const params = this.buildFilter(filters, new HttpParams());
     return this.http.get(
-      environment.apiRest + 'events/' + filename,
+      environment.apiRest + 'error_patterns/' + filename1 + '/' + filename2,
       { params }
     );
   }
@@ -147,6 +162,10 @@ export class ApiService {
 
     if (filters.order != null) {
       params = params.set('order_by', filters.order);
+    }
+
+    if (filters.threshold != null) {
+      params = params.set('error_threshold', filters.threshold);
     }
     return params;
   }

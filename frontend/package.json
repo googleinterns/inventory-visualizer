@@ -32,6 +32,7 @@
     "google-protobuf": "^4.0.0-rc.2",
     "grpc": "^1.24.3",
     "moment": "^2.27.0",
+    "ng5-slider": "^1.2.4",
     "ngx-infinite-scroll": "^9.0.0",
     "ngx-spinner": "^10.0.1",
     "protobufjs": "^6.10.1",

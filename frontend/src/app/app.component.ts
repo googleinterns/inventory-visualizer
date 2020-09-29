@@ -6,6 +6,7 @@ import {
   SegmentedTimelineCompareResponse,
   SegmentedDataErrorResponse,
   CountryEventsResponse,
+  ErrorPatternResponse,
 } from './proto/protobuf/data';
 import { Subject } from 'rxjs';
 import {
@@ -13,6 +14,7 @@ import {
   NgbDateStruct,
   NgbDateAdapter,
 } from '@ng-bootstrap/ng-bootstrap';
+import { Options } from 'ng5-slider';
 
 /**
  * This Service handles how the date is represented in scripts i.e. ngModel.
@@ -59,13 +61,13 @@ export class AppComponent implements OnInit {
   clearCharts: Subject<any> = new Subject();
   updateFilters: Subject<any> = new Subject();
   eventData: Subject<any> = new Subject();
+  errorPatterns: Subject<any> = new Subject();
 
   files: string[];
   events: string;
   hasDisplayedData: boolean;
   hasDisplayedErrorData: boolean;
 
-  filtered: boolean;
   filters: {
     device: string;
     countries: string[];
@@ -73,7 +75,15 @@ export class AppComponent implements OnInit {
     toDate: string;
     timePeriod: string;
     order: string;
+    threshold: number;
   };
+  thresholdValue: number = 10;
+  thresholdOptions: Options = {
+    floor: 0,
+    ceil: 100,
+    step: 0.1,
+  };
+  thresholdSet: boolean = false;
   fromDate: string;
   toDate: string;
   countries = [];
@@ -95,7 +105,6 @@ export class AppComponent implements OnInit {
     this.page = 0;
     this.hasDisplayedData = false;
     this.hasDisplayedErrorData = false;
-    this.filtered = false;
     this.filters = {
       device: null,
       countries: [],
@@ -103,6 +112,7 @@ export class AppComponent implements OnInit {
       toDate: null,
       timePeriod: null,
       order: null,
+      threshold: null,
     };
   }
 
@@ -131,7 +141,6 @@ export class AppComponent implements OnInit {
           this.processModalAction();
         },
         (reason) => {
-          this.filtered = false;
           this.discardFilters();
         }
       );
@@ -146,7 +155,6 @@ export class AppComponent implements OnInit {
           this.processModalAction();
         },
         (reason) => {
-          this.filtered = false;
           this.discardFilters();
         }
       );
@@ -161,12 +169,26 @@ export class AppComponent implements OnInit {
       );
   }
 
+  openErrorPatternModal(orders): void {
+    this.modalService
+      .open(orders, { ariaLabelledBy: 'modal-basic-title' })
+      .result.then(
+        (result) => {
+          this.thresholdSet = true;
+          this.saveFilters();
+          this.getErrorPatterns();
+        },
+        (reason) => {
+          this.discardFilters();
+        }
+      );
+  }
+
   processModalAction(): void {
-    this.filtered = true;
     this.saveFilters();
     this.page = 0;
-    this.clearChild(true);
-    this.sendFiltersToChild(this.filters);
+    this.sendToChild(this.clearCharts, true);
+    this.sendToChild(this.updateFilters, this.filters);
     if (this.files.length === 1) {
       this.getData();
     } else {
@@ -185,10 +207,12 @@ export class AppComponent implements OnInit {
 
   public refresh(): void {
     this.deleteFiles();
-    this.discardFilters();
-    this.sendFiltersToChild(this.filters);
-    this.clearChild(true);
-    this.giveEventsToChild({ countryEvents: [] });
+    this.resetFilters();
+    this.filters.threshold = null;
+    this.thresholdValue = 10;
+    this.sendToChild(this.updateFilters, this.filters);
+    this.sendToChild(this.clearCharts, true);
+    this.sendToChild(this.eventData, { countryEvents: [] });
     this.hasDisplayedData = false;
     this.hasDisplayedErrorData = false;
   }
@@ -214,7 +238,7 @@ export class AppComponent implements OnInit {
   }
 
   public handleComparisonInput(files: FileList): void {
-    this.clearChild(true);
+    this.sendToChild(this.clearCharts, true);
     this.page = 0;
     this.files.push(files[0].name);
     this.api.uploadFile(files).subscribe((response) => {
@@ -225,7 +249,7 @@ export class AppComponent implements OnInit {
   }
 
   public handleEventsInput(files: FileList): void {
-    this.clearChild(true);
+    this.sendToChild(this.clearCharts, true);
     this.page = 0;
     this.api.uploadFile(files).subscribe((response) => {
       this.setToken(response.token);
@@ -242,28 +266,8 @@ export class AppComponent implements OnInit {
     });
   }
 
-  signalChildForChartUpdates(changes): void {
-    this.updateCharts.next(changes);
-  }
-
-  triggerChildComparison(changes): void {
-    this.compareData.next(changes);
-  }
-
-  giveErrorDataToChild(changes): void {
-    this.errorData.next(changes);
-  }
-
-  giveEventsToChild(changes): void {
-    this.eventData.next(changes);
-  }
-
-  clearChild(changes): void {
-    this.clearCharts.next(changes);
-  }
-
-  sendFiltersToChild(changes): void {
-    this.updateFilters.next(changes);
+  sendToChild(subject, changes): void {
+    subject.next(changes);
   }
 
   getData(): void {
@@ -275,7 +279,7 @@ export class AppComponent implements OnInit {
         this.devices = this.dataResponse.devices;
         this.segments = [];
         this.dataResponse.data.forEach((item) => this.segments.push(item));
-        this.signalChildForChartUpdates(this.segments);
+        this.sendToChild(this.updateCharts, this.segments);
         this.hasDisplayedData = true;
       });
   }
@@ -291,7 +295,7 @@ export class AppComponent implements OnInit {
       )
       .subscribe((res) => {
         const compareResponse = SegmentedTimelineCompareResponse.fromJSON(res);
-        this.triggerChildComparison(compareResponse);
+        this.sendToChild(this.compareData, compareResponse);
         this.hasDisplayedData = true;
       });
   }
@@ -302,7 +306,11 @@ export class AppComponent implements OnInit {
       .subscribe((res) => {
         const compareResponse = SegmentedDataErrorResponse.fromJSON(res);
         this.hasDisplayedErrorData = true;
-        this.giveErrorDataToChild(compareResponse);
+        this.sendToChild(this.errorData, compareResponse);
+
+        if (this.filters.threshold) {
+          this.getErrorPatterns();
+        }
         this.getComparisonData();
       });
   }
@@ -310,13 +318,22 @@ export class AppComponent implements OnInit {
   getEventsData(): void {
     this.api.getEventsData(this.events, this.filters).subscribe((res) => {
       const eventsResponse = CountryEventsResponse.fromJSON(res);
-      this.giveEventsToChild(eventsResponse);
+      this.sendToChild(this.eventData, eventsResponse);
       if (this.files.length === 1) {
         this.getData();
       } else {
         this.getErrorMetricsData();
       }
     });
+  }
+
+  getErrorPatterns(): void {
+    this.api
+      .getErrorPatterns(this.files[0], this.files[1], this.filters)
+      .subscribe((res) => {
+        const patterns = ErrorPatternResponse.fromJSON(res);
+        this.sendToChild(this.errorPatterns, patterns);
+      });
   }
 
   saveFilters(): void {
@@ -326,6 +343,9 @@ export class AppComponent implements OnInit {
     this.filters.fromDate = this.fromDate;
     this.filters.timePeriod = this.selectedTimePeriodId;
     this.filters.order = this.order;
+    if (this.thresholdSet) {
+      this.filters.threshold = this.thresholdValue;
+    }
   }
 
   discardFilters(): void {
@@ -335,5 +355,22 @@ export class AppComponent implements OnInit {
     this.toDate = this.filters.toDate;
     this.selectedTimePeriodId = this.filters.timePeriod;
     this.order = this.filters.order;
+    if (this.thresholdSet) {
+      this.thresholdValue = this.filters.threshold;
+    }
+    this.thresholdSet = false;
+  }
+
+  resetFilters(): void {
+    this.filters = {
+      device: null,
+      countries: [],
+      fromDate: null,
+      toDate: null,
+      timePeriod: null,
+      order: null,
+      threshold: null,
+    };
+    this.thresholdSet = false;
   }
 }

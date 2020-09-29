@@ -21,8 +21,10 @@ export class GoogleChartsComponent implements AfterViewInit {
   @Input() clear: Subject<any> = new Subject();
   @Input() filters: Subject<any> = new Subject();
   @Input() events: Subject<any> = new Subject();
+  @Input() patterns: Subject<any> = new Subject();
   @Output() scrolled = new EventEmitter<number>();
   charts = [];
+  patternsChart = [];
   segmentedErrors = [];
   countryEvents = [];
   appliedFilters = null;
@@ -38,15 +40,20 @@ export class GoogleChartsComponent implements AfterViewInit {
     this.addComparisonVisualizations();
     this.addErrorVisualization();
     this.filterErrorVisualization();
+    this.displayErrorPatterns();
     this.events.subscribe((v) => {
       this.countryEvents = v.countryEvents;
     });
     this.clear.subscribe((v) => {
       this.segmentedErrors = [];
       this.charts = [];
-      let div = document.getElementById('chart_div');
-      while (div.firstChild) {
-        div.removeChild(div.firstChild);
+      let error_div = document.getElementById('chart_div');
+      while (error_div.firstChild) {
+        error_div.removeChild(error_div.firstChild);
+      }
+      let pattern_div = document.getElementById('pattern_chart');
+      while (pattern_div.firstChild) {
+        pattern_div.removeChild(pattern_div.firstChild);
       }
     });
   }
@@ -266,6 +273,45 @@ export class GoogleChartsComponent implements AfterViewInit {
       if (this.segmentedErrors !== [] && this.segmentedErrors.length !== 0) {
         this.plotErrors(this.segmentedErrors);
       }
+    });
+  }
+
+  displayErrorPatterns(): void {
+    this.patterns.subscribe((v) => {
+      const data = [];
+      for (let i = 0; i < v.dates.length; i++) {
+        const tooltip = ChartsUtil.buildTooltip(
+          ChartsUtil.buildDateForCharts(v.dates[i], this.appliedFilters),
+          [v.oddsForLargeError[i]],
+          ['Odds for error']
+        );
+        data.push([v.dates[i], v.oddsForLargeError[i], tooltip]);
+      }
+      this.addErrorPatternLineChart(data);
+    });
+  }
+
+  addErrorPatternLineChart(data): void {
+    const dataTable = new google.visualization.DataTable();
+    dataTable.addColumn('date', 'date');
+    dataTable.addColumn('number', 'Odds of error bigger than threshold');
+    dataTable.addColumn({ type: 'string', role: 'tooltip', p: { html: true }});
+    dataTable.addRows(data);
+
+    const chart = new google.visualization.LineChart(
+      document.getElementById('pattern_chart')
+    );
+
+    chart.draw(dataTable, {
+      title: 'Error Patterns',
+      height: window.innerHeight,
+      width: window.innerWidth,
+      legend: { position: 'none' },
+      tooltip: { isHtml: true },
+      hAxis: { format: 'MMM yyyy', gridlines: { color: '#fff' } },
+      vAxes: {
+        0: { title: 'Odds for error %' },
+      },
     });
   }
 
