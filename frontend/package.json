@@ -35,7 +35,7 @@
     "ng5-slider": "^1.2.4",
     "ngx-infinite-scroll": "^9.0.0",
     "ngx-spinner": "^10.0.1",
-    "protobufjs": "^6.10.1",
+    "protobufjs": "^7.2.4",
     "protoc": "^1.0.4",
     "rxjs": "~6.5.5",
     "ts-proto": "^1.26.0",
